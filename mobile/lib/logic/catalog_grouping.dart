@@ -46,6 +46,61 @@ String seriesGroupKey(String name) {
   return base.isEmpty ? normalizeModelName(name) : base;
 }
 
+String brandIndexLetter(String brand) {
+  if (brand.isEmpty) return '#';
+  final first = brand[0].toUpperCase();
+  final code = first.codeUnitAt(0);
+  if (code >= 65 && code <= 90) return first;
+  if (first == 'İ') return 'I';
+  if (first == 'Ş') return 'S';
+  if (first == 'Ç') return 'C';
+  if (first == 'Ö') return 'O';
+  if (first == 'Ü') return 'U';
+  if (first == 'Ğ') return 'G';
+  return '#';
+}
+
+/// A–Z bölüm başlıkları altında marka listesi (Epey marka dizini mantığı).
+List<(String letter, List<BrandGroup> brands)> buildBrandSections(List<BrandGroup> index) {
+  final map = <String, List<BrandGroup>>{};
+  for (final group in index) {
+    final letter = brandIndexLetter(group.brand);
+    map.putIfAbsent(letter, () => []).add(group);
+  }
+  final letters = map.keys.toList()
+    ..sort((a, b) {
+      if (a == '#') return 1;
+      if (b == '#') return -1;
+      return a.compareTo(b);
+    });
+  return [for (final letter in letters) (letter, map[letter]!)];
+}
+
+List<BrandGroup> filterBrandIndex(List<BrandGroup> index, String query) {
+  final q = query.trim().toLowerCase();
+  if (q.isEmpty) return index;
+  final out = <BrandGroup>[];
+  for (final group in index) {
+    if (group.brand.toLowerCase().contains(q)) {
+      out.add(group);
+      continue;
+    }
+    final seriesHits = <SeriesGroup>[];
+    for (final series in group.series) {
+      final models = series.models.where((p) {
+        return p.name.toLowerCase().contains(q) || series.series.toLowerCase().contains(q);
+      }).toList();
+      if (models.isNotEmpty) {
+        seriesHits.add(SeriesGroup(series: series.series, models: models));
+      }
+    }
+    if (seriesHits.isNotEmpty) {
+      out.add(BrandGroup(brand: group.brand, series: seriesHits));
+    }
+  }
+  return out;
+}
+
 List<BrandGroup> buildBrandIndex(List<Phone> list) {
   final byBrand = <String, Map<String, List<Phone>>>{};
   for (final phone in list) {
