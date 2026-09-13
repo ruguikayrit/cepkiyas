@@ -50,6 +50,13 @@ const catalogCategories = [
     status: CatalogCategoryStatus.soon,
   ),
   CatalogCategory(
+    id: 'akilli-bileklik',
+    label: 'Akıllı bileklik',
+    description: 'Fitness bileklikleri',
+    icon: Icons.sensors_rounded,
+    status: CatalogCategoryStatus.soon,
+  ),
+  CatalogCategory(
     id: 'kulaklik',
     label: 'Kulaklık',
     description: 'Kablosuz ve kablolu',
