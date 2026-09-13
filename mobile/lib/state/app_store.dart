@@ -52,7 +52,13 @@ class AppStore extends ChangeNotifier {
         .where((row) => row.officialId == null || !officialIds.contains(row.officialId))
         .map((row) => hydrateListing(row, overlay[row.id] as Map<String, dynamic>?));
     phones = [...official, ...listing]
-        .map((p) => applyOfficialInheritance(p, officialsById))
+        .map((p) {
+          try {
+            return applyOfficialInheritance(p, officialsById);
+          } catch (_) {
+            return p;
+          }
+        })
         .where(CatalogWindow.includes)
         .map(CatalogWindow.withDisplayYear)
         .toList();

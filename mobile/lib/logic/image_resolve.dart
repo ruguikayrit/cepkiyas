@@ -1,19 +1,36 @@
-/// Ürün görselleri — SVG ve kırık Commons URL'lerini eler / düzeltir.
+/// Ürün görselleri — SVG eler; Commons URL'lerini bozmadan normalize eder.
 String resolveProductImageUrl(String url) {
   if (url.isEmpty) return '';
-  final lower = url.toLowerCase();
-  if (lower.contains('.svg')) return '';
+  try {
+    final lower = url.toLowerCase();
+    if (lower.contains('.svg')) return '';
 
-  if (url.contains('Special:FilePath')) {
-    final uri = Uri.parse(url);
-    final file = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : '';
-    if (file.isEmpty) return '';
-    final width = uri.queryParameters['width'] ?? '960';
-    return 'https://commons.wikimedia.org/wiki/Special:FilePath/${Uri.encodeComponent(Uri.decodeComponent(file))}?width=$width';
+    if (url.contains('Special:FilePath')) {
+      const marker = 'Special:FilePath/';
+      final start = url.indexOf(marker);
+      if (start < 0) return _https(url);
+
+      var tail = url.substring(start + marker.length);
+      var width = '960';
+      final q = tail.indexOf('?');
+      if (q >= 0) {
+        final query = tail.substring(q + 1);
+        tail = tail.substring(0, q);
+        final match = RegExp(r'width=(\d+)').firstMatch(query);
+        if (match != null) width = match.group(1)!;
+      }
+      if (tail.isEmpty) return '';
+      // Dosya adını yeniden encode etme — overlay'deki haliyle kullan (Uri.parse patlamasın).
+      return 'https://commons.wikimedia.org/wiki/Special:FilePath/$tail?width=$width';
+    }
+
+    return _https(url);
+  } catch (_) {
+    return '';
   }
-
-  return url.replaceFirst('http://', 'https://');
 }
+
+String _https(String url) => url.replaceFirst(RegExp(r'^http://'), 'https://');
 
 List<String> resolvePromoUrls(List<String> urls) {
   return urls.map(resolveProductImageUrl).where((u) => u.isNotEmpty).toSet().toList();
