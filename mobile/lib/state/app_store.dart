@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../logic/catalog_grouping.dart';
 import '../logic/filters.dart';
 import '../logic/hydrate.dart';
 import '../logic/ratings.dart';
@@ -17,6 +18,7 @@ class AppStore extends ChangeNotifier {
   static const maxCompare = 4;
 
   List<Phone> phones = [];
+  List<BrandGroup> brandIndex = [];
   List<String> compareIds = [];
   List<String> favoriteIds = [];
   Map<String, UserVote> votes = {};
@@ -40,6 +42,7 @@ class AppStore extends ChangeNotifier {
         .where((row) => row.officialId == null || !officialIds.contains(row.officialId))
         .map((row) => hydrateListing(row, overlay[row.id] as Map<String, dynamic>?));
     phones = [...official, ...listing];
+    brandIndex = buildBrandIndex(phones);
     scores = ScoreEngine(phones);
     final maxPrice = phones.fold<int>(200000, (max, phone) => phone.priceTRY > max ? phone.priceTRY : max);
     filters = CatalogFilters(maxPrice: maxPrice);

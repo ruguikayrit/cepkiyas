@@ -156,7 +156,7 @@ class _CatalogEntryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (entry.kind) {
       case _EntryKind.group:
-        return _ProductGroupHeader(category: entry.category!);
+        return ProductGroupHeader(category: entry.category!);
       case _EntryKind.soon:
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
@@ -204,8 +204,8 @@ class _CatalogEntryTile extends StatelessWidget {
   }
 }
 
-class _ProductGroupHeader extends StatelessWidget {
-  const _ProductGroupHeader({required this.category});
+class ProductGroupHeader extends StatelessWidget {
+  const ProductGroupHeader({super.key, required this.category});
 
   final CatalogCategory category;
 

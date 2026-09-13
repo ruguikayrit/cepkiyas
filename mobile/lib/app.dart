@@ -55,6 +55,7 @@ class Shell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tab = store.tab.clamp(0, AppTab.count - 1);
     final pages = [
       HomeScreen(store: store),
       CatalogScreen(store: store),
@@ -85,7 +86,10 @@ class Shell extends StatelessWidget {
           ),
         ],
       ),
-      body: IndexedStack(index: store.tab.clamp(0, AppTab.count - 1), children: pages),
+      body: ColoredBox(
+        color: Ck.bg,
+        child: pages[tab],
+      ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

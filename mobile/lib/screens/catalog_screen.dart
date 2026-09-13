@@ -5,6 +5,7 @@ import '../logic/filters.dart';
 import '../logic/format.dart';
 import '../state/app_store.dart';
 import '../theme.dart';
+import '../widgets/catalog_brands_view.dart';
 import '../widgets/product_groups_view.dart';
 import '../widgets/widgets.dart';
 
@@ -19,8 +20,8 @@ class CatalogScreen extends StatefulWidget {
 class _CatalogScreenState extends State<CatalogScreen> {
   late final TextEditingController _search;
   var _view = _ProductsBrowseMode.grouped;
-  /// Varsayılan Telefon: tüm grupları aynı anda açmak web'de ağırlaştırır.
   String? _categoryFilter = 'telefon';
+  String? _brandFocus;
 
   AppStore get store => widget.store;
 
@@ -56,13 +57,44 @@ class _CatalogScreenState extends State<CatalogScreen> {
     final chips = store.filters.chips(store.priceMax);
     final queryGrouped = _view == _ProductsBrowseMode.grouped ? _search.text : '';
 
-    return Column(
+    if (_categoryFilter != 'telefon' && _categoryFilter != null) {
+      final cat = catalogCategoryById(_categoryFilter!);
+      return ColoredBox(
+        color: Ck.bg,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _CategoryStrip(
+              categories: _categories,
+              selectedId: _categoryFilter,
+              onSelect: (id) => setState(() {
+                _categoryFilter = _categoryFilter == id ? 'telefon' : id;
+                _brandFocus = null;
+              }),
+            ),
+            Expanded(child: _CategorySoonBody(category: cat)),
+          ],
+        ),
+      );
+    }
+
+    return ColoredBox(
+      color: Ck.bg,
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _CategoryStrip(
           categories: _categories,
           selectedId: _categoryFilter,
-          onSelect: (id) => setState(() => _categoryFilter = _categoryFilter == id ? null : id),
+          onSelect: (id) => setState(() {
+            if (id != 'telefon' && catalogCategoryById(id).status != CatalogCategoryStatus.active) {
+              _categoryFilter = id;
+              _brandFocus = null;
+              return;
+            }
+            _categoryFilter = _categoryFilter == id ? 'telefon' : id;
+            _brandFocus = null;
+          }),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
@@ -176,10 +208,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
         ],
         Expanded(
           child: _view == _ProductsBrowseMode.grouped
-              ? ProductGroupsView(
+              ? _GroupedProductsBody(
                   store: store,
                   categories: _categories,
-                  onlyCategoryId: _categoryFilter,
+                  categoryFilter: _categoryFilter,
+                  brandFocus: _brandFocus,
+                  onBrandFocus: (brand) => setState(() => _brandFocus = brand),
                   query: queryGrouped,
                 )
               : list.isEmpty
@@ -206,6 +240,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     ),
         ),
       ],
+      ),
     );
   }
 
@@ -390,6 +425,114 @@ class _CatalogScreenState extends State<CatalogScreen> {
 }
 
 enum _ProductsBrowseMode { grouped, grid }
+
+class _GroupedProductsBody extends StatelessWidget {
+  const _GroupedProductsBody({
+    required this.store,
+    required this.categories,
+    required this.categoryFilter,
+    required this.brandFocus,
+    required this.onBrandFocus,
+    required this.query,
+  });
+
+  final AppStore store;
+  final List<CatalogCategory> categories;
+  final String? categoryFilter;
+  final String? brandFocus;
+  final ValueChanged<String?> onBrandFocus;
+  final String query;
+
+  @override
+  Widget build(BuildContext context) {
+    if (store.brandIndex.isEmpty) {
+      return const Center(child: CircularProgressIndicator(color: Ck.mint, strokeWidth: 2));
+    }
+
+    final showAllGroups = categoryFilter == null;
+    if (showAllGroups) {
+      return ListView(
+        padding: const EdgeInsets.only(bottom: 100),
+        children: [
+          for (final category in categories) ...[
+            ProductGroupHeader(category: category),
+            if (category.status != CatalogCategoryStatus.active)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Text(
+                  '${category.description}\nBu gruptaki marka ve modeller yakında.',
+                  style: const TextStyle(color: Ck.mute, height: 1.45, fontSize: 13),
+                ),
+              )
+            else
+              SizedBox(
+                height: 420,
+                child: CatalogBrandsView(
+                  store: store,
+                  index: store.brandIndex,
+                  focusBrand: brandFocus,
+                  onFocusBrand: onBrandFocus,
+                  query: query,
+                ),
+              ),
+          ],
+        ],
+      );
+    }
+
+    final telefon = categories.firstWhere((c) => c.id == 'telefon');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ProductGroupHeader(category: telefon),
+        Expanded(
+          child: CatalogBrandsView(
+            store: store,
+            index: store.brandIndex,
+            focusBrand: brandFocus,
+            onFocusBrand: onBrandFocus,
+            query: query,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CategorySoonBody extends StatelessWidget {
+  const _CategorySoonBody({required this.category});
+
+  final CatalogCategory category;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(category.icon, size: 48, color: Ck.mute),
+            const SizedBox(height: 16),
+            Text(category.label, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Text(
+              category.description,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Ck.mute, height: 1.4),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Bu ürün grubu hazırlanıyor. Telefon grubunda tüm modelleri inceleyebilirsiniz.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Ck.mute, fontSize: 13, height: 1.45),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _CategoryStrip extends StatelessWidget {
   const _CategoryStrip({
