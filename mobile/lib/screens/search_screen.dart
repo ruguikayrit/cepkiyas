@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../logic/format.dart';
+import '../navigation/app_tab.dart';
 import '../state/app_store.dart';
 import '../theme.dart';
 import '../widgets/widgets.dart';
@@ -48,7 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       label: Text(brand),
                       onPressed: () {
                         widget.store.setFilters(widget.store.filters.copy()..brands = [brand]..query = '');
-                        widget.store.goTab(1);
+                        widget.store.goTab(AppTab.products);
                         Navigator.pop(context);
                       },
                     ),
@@ -79,7 +80,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _openCatalog() {
     widget.store.setFilters(widget.store.filters.copy()..query = query);
-    widget.store.goTab(1);
+    widget.store.goTab(AppTab.products);
     Navigator.pop(context);
   }
 }

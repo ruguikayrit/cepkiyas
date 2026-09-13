@@ -12,11 +12,13 @@ import '../models/phone.dart';
 
 class AppStore extends ChangeNotifier {
   static const _compareKey = 'cepkiyas.compare.v1';
+  static const _favoritesKey = 'cepkiyas.favorites.v1';
   static const _votesKey = 'cepkiyas.votes.v1';
   static const maxCompare = 4;
 
   List<Phone> phones = [];
   List<String> compareIds = [];
+  List<String> favoriteIds = [];
   Map<String, UserVote> votes = {};
   late ScoreEngine scores;
   late CatalogFilters filters;
@@ -44,6 +46,7 @@ class AppStore extends ChangeNotifier {
 
     final prefs = await SharedPreferences.getInstance();
     compareIds = prefs.getStringList(_compareKey) ?? [];
+    favoriteIds = prefs.getStringList(_favoritesKey) ?? [];
     final votesRaw = prefs.getString(_votesKey);
     if (votesRaw != null) {
       final map = jsonDecode(votesRaw) as Map<String, dynamic>;
@@ -65,6 +68,24 @@ class AppStore extends ChangeNotifier {
       ];
 
   bool isCompared(String id) => compareIds.contains(id);
+
+  bool isFavorite(String id) => favoriteIds.contains(id);
+
+  List<Phone> get favorites => [
+        for (final id in favoriteIds)
+          if (byId(id) != null) byId(id)!,
+      ];
+
+  Future<void> toggleFavorite(String id) async {
+    if (favoriteIds.contains(id)) {
+      favoriteIds = favoriteIds.where((item) => item != id).toList();
+    } else {
+      favoriteIds = [...favoriteIds, id];
+    }
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_favoritesKey, favoriteIds);
+  }
 
   Future<void> toggleCompare(String id) async {
     if (compareIds.contains(id)) {

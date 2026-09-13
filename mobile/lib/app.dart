@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'navigation/app_tab.dart';
+import 'screens/account_screen.dart';
 import 'screens/catalog_screen.dart';
 import 'screens/compare_screen.dart';
 import 'screens/detail_screen.dart';
+import 'screens/favorites_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/search_screen.dart';
 import 'state/app_store.dart';
@@ -56,6 +59,8 @@ class Shell extends StatelessWidget {
       HomeScreen(store: store),
       CatalogScreen(store: store),
       CompareScreen(store: store),
+      FavoritesScreen(store: store),
+      AccountScreen(store: store),
     ];
 
     return Scaffold(
@@ -80,19 +85,29 @@ class Shell extends StatelessWidget {
           ),
         ],
       ),
-      body: IndexedStack(index: store.tab, children: pages),
+      body: IndexedStack(index: store.tab.clamp(0, AppTab.count - 1), children: pages),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (store.compareIds.isNotEmpty && store.tab != 2) _CompareBar(store: store),
+          if (store.compareIds.isNotEmpty && store.tab != AppTab.compare) _CompareBar(store: store),
           NavigationBar(
             backgroundColor: Ck.bg2,
             indicatorColor: Ck.mintDim,
-            selectedIndex: store.tab,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            height: 68,
+            selectedIndex: store.tab.clamp(0, AppTab.count - 1),
             onDestinationSelected: store.goTab,
             destinations: [
-              const NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Ana'),
-              const NavigationDestination(icon: Icon(Icons.category_outlined), selectedIcon: Icon(Icons.category_rounded), label: 'Ürünler'),
+              const NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: 'Anasayfa',
+              ),
+              const NavigationDestination(
+                icon: Icon(Icons.category_outlined),
+                selectedIcon: Icon(Icons.category_rounded),
+                label: 'Ürünler',
+              ),
               NavigationDestination(
                 icon: Badge(
                   isLabelVisible: store.compareIds.isNotEmpty,
@@ -101,6 +116,20 @@ class Shell extends StatelessWidget {
                 ),
                 selectedIcon: const Icon(Icons.compare_arrows_rounded),
                 label: 'Kıyas',
+              ),
+              NavigationDestination(
+                icon: Badge(
+                  isLabelVisible: store.favoriteIds.isNotEmpty,
+                  label: Text('${store.favoriteIds.length}'),
+                  child: const Icon(Icons.favorite_border_rounded),
+                ),
+                selectedIcon: const Icon(Icons.favorite_rounded),
+                label: 'Favoriler',
+              ),
+              const NavigationDestination(
+                icon: Icon(Icons.person_outline_rounded),
+                selectedIcon: Icon(Icons.person_rounded),
+                label: 'Hesabım',
               ),
             ],
           ),
@@ -166,7 +195,7 @@ class _CompareBar extends StatelessWidget {
           ),
           TextButton(onPressed: store.clearCompare, child: const Text('Temizle')),
           FilledButton(
-            onPressed: store.compareIds.length < 2 ? null : () => store.goTab(2),
+            onPressed: store.compareIds.length < 2 ? null : () => store.goTab(AppTab.compare),
             child: Text(store.compareIds.length < 2 ? 'Kıyasla' : 'Kıyasla (${store.compareIds.length})'),
           ),
         ],

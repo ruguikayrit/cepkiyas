@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../navigation/app_tab.dart';
 import '../state/app_store.dart';
 import '../theme.dart';
 import '../widgets/widgets.dart';
@@ -53,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   onTap: () async {
                     await store.replaceCompare([left.id, right.id]);
-                    store.goTab(2);
+                    store.goTab(AppTab.compare);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(14),
@@ -88,7 +89,7 @@ class HomeScreen extends StatelessWidget {
                     side: const BorderSide(color: Ck.line),
                     onPressed: () {
                       store.setFilters(store.filters.copy()..brands = [brand]);
-                      store.goTab(1);
+                      store.goTab(AppTab.products);
                     },
                   ),
               ],

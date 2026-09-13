@@ -36,7 +36,19 @@ class _DetailScreenState extends State<DetailScreen> {
         final view = draft ?? user.mine ?? const UserVote();
 
         return Scaffold(
-          appBar: AppBar(title: Text(phone.name)),
+          appBar: AppBar(
+            title: Text(phone.name),
+            actions: [
+              IconButton(
+                tooltip: widget.store.isFavorite(phone.id) ? 'Favorilerden çıkar' : 'Favorilere ekle',
+                onPressed: () => widget.store.toggleFavorite(phone.id),
+                icon: Icon(
+                  widget.store.isFavorite(phone.id) ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  color: widget.store.isFavorite(phone.id) ? Ck.mint : null,
+                ),
+              ),
+            ],
+          ),
           body: ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
             children: [
