@@ -163,8 +163,15 @@ def titleize(slug: str) -> str:
     return " ".join(parts)
 
 
+MIN_YEAR = 2016
+MAX_YEAR = 2026
+LEGACY = re.compile(
+    r"iphone-[3-8](?![0-9])|galaxy-s[1-9](?![0-9])|galaxy-note-[1-9](?![0-9])|pixel-[1-5](?![0-9])"
+)
+
+
 def parse_year(slug: str, name: str) -> int:
-    years = [int(y) for y in re.findall(r"20(1[5-9]|2[0-6])", slug)]
+    years = [int(y) for y in re.findall(r"(20(?:1[6-9]|2[0-6]))", slug)]
     if years:
         return years[-1]
     compact = slug.lower()
@@ -174,16 +181,40 @@ def parse_year(slug: str, name: str) -> int:
         ("iphone-15", 2023),
         ("iphone-14", 2022),
         ("iphone-13", 2021),
+        ("iphone-12", 2020),
+        ("iphone-11", 2019),
+        ("iphone-xr", 2018),
+        ("iphone-xs", 2018),
+        ("iphone-x", 2017),
+        ("iphone-se-2022", 2022),
+        ("iphone-se-2020", 2020),
         ("galaxy-s26", 2026),
         ("galaxy-s25", 2025),
         ("galaxy-s24", 2024),
         ("galaxy-s23", 2023),
+        ("galaxy-s22", 2022),
+        ("galaxy-s21", 2021),
+        ("galaxy-s20", 2020),
+        ("galaxy-note-20", 2020),
+        ("galaxy-note-10", 2019),
         ("pixel-9", 2024),
         ("pixel-8", 2023),
+        ("pixel-7", 2022),
+        ("pixel-6", 2021),
+        ("redmi-note-14", 2024),
+        ("redmi-note-13", 2023),
     ):
         if needle in compact:
             return year
     return 2020
+
+
+def in_catalog_window(slug: str, year: int) -> bool:
+    if year < MIN_YEAR or year > MAX_YEAR:
+        return False
+    if LEGACY.search(slug.lower()) and not re.search(r"20(?:1[6-9]|2[0-6])", slug):
+        return False
+    return True
 
 
 def parse_storage(slug: str) -> int:
@@ -230,6 +261,8 @@ def main() -> None:
         storage = parse_storage(slug)
         family, os_name = os_family(brand)
         foldable = any(key in slug for key in ("fold", "flip", "razr", "mate-x", "find-n", "magic-v", "mix-fold"))
+        if not in_catalog_window(slug, year):
+            continue
         rows.append(
             {
                 "id": slug,

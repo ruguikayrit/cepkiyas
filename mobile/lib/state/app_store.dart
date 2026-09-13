@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../logic/catalog_grouping.dart';
+import '../logic/catalog_window.dart';
 import '../logic/filters.dart';
 import '../logic/hydrate.dart';
 import '../logic/ratings.dart';
@@ -48,7 +49,10 @@ class AppStore extends ChangeNotifier {
         .map((e) => CatalogRow.fromJson(e as Map<String, dynamic>))
         .where((row) => row.officialId == null || !officialIds.contains(row.officialId))
         .map((row) => hydrateListing(row, overlay[row.id] as Map<String, dynamic>?));
-    phones = [...official, ...listing];
+    phones = [...official, ...listing]
+        .where(CatalogWindow.includes)
+        .map(CatalogWindow.withDisplayYear)
+        .toList();
     brandIndex = buildBrandIndex(phones);
     scores = ScoreEngine(phones);
     final maxPrice = phones.fold<int>(200000, (max, phone) => phone.priceTRY > max ? phone.priceTRY : max);

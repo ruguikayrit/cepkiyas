@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cepkiyas_app/logic/catalog_window.dart';
 import 'package:cepkiyas_app/logic/hydrate.dart';
 import 'package:cepkiyas_app/logic/score.dart';
 import 'package:cepkiyas_app/logic/specs.dart';
@@ -16,7 +17,10 @@ List<Phone> loadCatalog() {
       .map((e) => CatalogRow.fromJson(e as Map<String, dynamic>))
       .where((row) => row.officialId == null || !officialIds.contains(row.officialId))
       .map(hydrateListing);
-  return [...official, ...listing];
+  return [...official, ...listing]
+      .where(CatalogWindow.includes)
+      .map(CatalogWindow.withDisplayYear)
+      .toList();
 }
 
 void main() {

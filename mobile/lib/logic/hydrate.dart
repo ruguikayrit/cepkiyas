@@ -1,4 +1,5 @@
 import '../models/phone.dart';
+import 'product_media.dart';
 
 class CatalogRow {
   const CatalogRow({
@@ -72,6 +73,9 @@ Phone hydrateListing(CatalogRow row, [Map<String, dynamic>? extra]) {
     if (displaySize > 0) '${displaySize}"',
     if (capacity != null) '$capacity mAh',
   ];
+  final promoImages = buildPromoImagesFromExtra(extra);
+  final image = extra['image'] as String? ?? (promoImages.isNotEmpty ? promoImages.first : '');
+
   return Phone(
     id: row.id,
     slug: row.slug,
@@ -87,7 +91,8 @@ Phone hydrateListing(CatalogRow row, [Map<String, dynamic>? extra]) {
     colors: [PhoneColor(name: 'Varsayılan', hex: row.accent)],
     accent: row.accent,
     highlights: highlights.isEmpty ? [row.brand, '${row.year}'] : highlights,
-    image: extra['image'] as String? ?? '',
+    image: image,
+    promoImages: promoImages,
     sourceUrl: extra['sourceUrl'] as String? ?? row.sourceUrl,
     seedRatings: const SeedRatings(
       average: 7,

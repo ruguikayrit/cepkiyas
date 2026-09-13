@@ -79,6 +79,7 @@ class Phone {
     required this.accent,
     required this.highlights,
     required this.image,
+    this.promoImages = const [],
     required this.sourceUrl,
     required this.seedRatings,
     required this.display,
@@ -109,6 +110,7 @@ class Phone {
   final String accent;
   final List<String> highlights;
   final String image;
+  final List<String> promoImages;
   final String sourceUrl;
   final SeedRatings seedRatings;
   final DisplaySpec display;
@@ -125,6 +127,44 @@ class Phone {
 
   int get accentValue =>
       int.parse('FF${accent.replaceFirst('#', '')}', radix: 16);
+
+  Phone copyWith({
+    int? year,
+    String? image,
+    List<String>? promoImages,
+    List<String>? highlights,
+  }) =>
+      Phone(
+        id: id,
+        slug: slug,
+        brand: brand,
+        name: name,
+        fullName: fullName,
+        year: year ?? this.year,
+        releaseDate: releaseDate,
+        priceTRY: priceTRY,
+        popularity: popularity,
+        os: os,
+        osFamily: osFamily,
+        colors: colors,
+        accent: accent,
+        highlights: highlights ?? this.highlights,
+        image: image ?? this.image,
+        promoImages: promoImages ?? this.promoImages,
+        sourceUrl: sourceUrl,
+        seedRatings: seedRatings,
+        display: display,
+        body: body,
+        performance: performance,
+        memory: memory,
+        camera: camera,
+        battery: battery,
+        connectivity: connectivity,
+        audio: audio,
+        features: features,
+        sensors: sensors,
+        benchmarks: benchmarks,
+      );
 
   factory Phone.fromJson(Map<String, dynamic> json) => Phone(
         id: json['id'] as String,
@@ -143,7 +183,8 @@ class Phone {
             .toList(),
         accent: json['accent'] as String,
         highlights: (json['highlights'] as List).cast<String>(),
-        image: json['image'] as String,
+        image: json['image'] as String? ?? '',
+        promoImages: _promoImagesFromJson(json),
         sourceUrl: json['sourceUrl'] as String,
         seedRatings:
             SeedRatings.fromJson(json['seedRatings'] as Map<String, dynamic>),
@@ -160,6 +201,16 @@ class Phone {
         sensors: (json['sensors'] as List).cast<String>(),
         benchmarks: BenchSpec.fromJson(json['benchmarks'] as Map<String, dynamic>),
       );
+}
+
+List<String> _promoImagesFromJson(Map<String, dynamic> json) {
+  final raw = json['promoImages'];
+  if (raw is List) {
+    return raw.map((e) => e.toString()).where((u) => u.isNotEmpty).toList();
+  }
+  final image = json['image'] as String?;
+  if (image != null && image.isNotEmpty) return [image];
+  return const [];
 }
 
 class DisplaySpec {

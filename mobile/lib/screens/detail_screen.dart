@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../logic/format.dart';
+import '../logic/product_media.dart';
 import '../logic/ratings.dart';
 import '../logic/specs.dart';
 import '../models/phone.dart';
 import '../state/app_store.dart';
 import '../theme.dart';
+import '../typography.dart';
+import '../widgets/product_promo_gallery.dart';
 import '../widgets/widgets.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -52,38 +55,45 @@ class _DetailScreenState extends State<DetailScreen> {
           body: ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Ck.panel,
-                  border: Border.all(color: Ck.line),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
+              ProductPromoGallery(phone: phone),
+              const SizedBox(height: 16),
+              Text('${phone.brand} · ${phone.year}', style: Theme.of(context).textTheme.bodySmall),
+              Text(phone.fullName, style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 6),
+              Text(
+                phone.highlights.join(' · '),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Ck.mute),
+              ),
+              if (phone.priceTRY > 0) ...[
+                const SizedBox(height: 8),
+                Text(formatPrice(phone.priceTRY), style: Theme.of(context).textTheme.titleLarge),
+              ],
+              const SizedBox(height: 12),
+              CompareChip(
+                selected: widget.store.isCompared(phone.id),
+                onTap: () => widget.store.toggleCompare(phone.id),
+              ),
+              const SizedBox(height: 20),
+              _SectionHeading('Tanıtım'),
+              if (phone.colors.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    PhoneVisual(phone: phone, height: 140),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${phone.brand} · ${phone.year}', style: const TextStyle(color: Ck.mute)),
-                          Text(phone.fullName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.5)),
-                          Text(phone.highlights.join(' · '), style: const TextStyle(color: Ck.mute, fontSize: 13)),
-                          const SizedBox(height: 8),
-                          Text(formatPrice(phone.priceTRY), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
-                          const SizedBox(height: 10),
-                          CompareChip(
-                            selected: widget.store.isCompared(phone.id),
-                            onTap: () => widget.store.toggleCompare(phone.id),
-                          ),
-                        ],
+                    for (final color in phone.colors)
+                      Chip(
+                        avatar: CircleAvatar(backgroundColor: Color(color.value), radius: 8),
+                        label: Text(color.name),
+                        backgroundColor: Ck.panel,
+                        side: const BorderSide(color: Ck.line),
                       ),
-                    ),
                   ],
                 ),
-              ),
+              ],
               const SizedBox(height: 12),
+              _PromoThumbs(phone: phone),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -92,7 +102,9 @@ class _DetailScreenState extends State<DetailScreen> {
                   ScoreRing(value: index, label: 'Endeks', size: 84),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
+              _SectionHeading('Öne çıkan özellikler'),
+              const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -104,7 +116,9 @@ class _DetailScreenState extends State<DetailScreen> {
                   for (final entry in cats.entries) _Key('Teknik · ${entry.key}', formatScore(entry.value)),
                 ],
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 20),
+              _SectionHeading('Topluluk puanı'),
+              const SizedBox(height: 8),
               _RatingCard(
                 user: user,
                 view: view,
@@ -128,7 +142,9 @@ class _DetailScreenState extends State<DetailScreen> {
                   );
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
+              _SectionHeading('Teknik özellikler'),
+              const SizedBox(height: 8),
               for (final group in specGroups) _SpecBlock(phone: phone, group: group),
               _ChipBlock('Sensörler', phone.sensors),
               _ChipBlock('Kamera özellikleri', phone.camera.features),
@@ -136,6 +152,47 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _SectionHeading extends StatelessWidget {
+  const _SectionHeading(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text.toUpperCase(), style: CkType.sectionLabel().copyWith(color: Ck.ink, letterSpacing: 0.4));
+  }
+}
+
+class _PromoThumbs extends StatelessWidget {
+  const _PromoThumbs({required this.phone});
+  final Phone phone;
+
+  @override
+  Widget build(BuildContext context) {
+    final images = promoImagesFor(phone);
+    if (images.length <= 1) return const SizedBox.shrink();
+    return SizedBox(
+      height: 72,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          final url = images[i];
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: url.startsWith('http')
+                  ? Image.network(url, fit: BoxFit.cover)
+                  : Image.asset('assets$url', fit: BoxFit.cover),
+            ),
+          );
+        },
+      ),
     );
   }
 }

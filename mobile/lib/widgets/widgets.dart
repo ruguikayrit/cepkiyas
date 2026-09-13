@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../logic/format.dart';
+import '../logic/product_media.dart';
 import '../models/phone.dart';
 import '../state/app_store.dart';
 import '../theme.dart';
@@ -23,7 +24,7 @@ class PhoneVisual extends StatelessWidget {
         border: Border.all(color: Ck.line),
       ),
       clipBehavior: Clip.antiAlias,
-      child: phone.image.isEmpty
+      child: promoHeroImage(phone) == null
           ? Center(
               child: Text(
                 phone.brand,
@@ -31,16 +32,16 @@ class PhoneVisual extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Ck.mute, letterSpacing: 0),
               ),
             )
-          : phone.image.startsWith('http')
+          : promoHeroImage(phone)!.startsWith('http')
               ? Image.network(
-                  phone.image,
+                  promoHeroImage(phone)!,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stack) => Center(
                     child: Text(phone.brand, style: const TextStyle(color: Ck.mute, fontSize: 10)),
                   ),
                 )
               : Image.asset(
-                  'assets${phone.image}',
+                  'assets${promoHeroImage(phone)!}',
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stack) => Center(
                     child: Text(

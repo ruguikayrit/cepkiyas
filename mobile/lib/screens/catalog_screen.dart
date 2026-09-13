@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../logic/catalog_grouping.dart';
+import '../logic/catalog_window.dart';
 import '../logic/catalog_taxonomy.dart';
 import '../logic/format.dart';
 import '../models/phone.dart';
@@ -83,6 +84,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Text(
+              'Son 10 yıl · ${CatalogWindow.label} aralığındaki marka ve modeller',
+              style: const TextStyle(color: Ck.mute, fontSize: 12, height: 1.35),
             ),
           ),
           Expanded(child: _body()),
