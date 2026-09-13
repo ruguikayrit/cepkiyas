@@ -30,10 +30,7 @@ class CepKiyasApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: ListenableBuilder(
-        listenable: store,
-        builder: (_, _) => Shell(store: store),
-      ),
+      home: Shell(store: store),
       onGenerateRoute: (settings) {
         if (settings.name == '/telefon') {
           return MaterialPageRoute(
@@ -49,22 +46,46 @@ class CepKiyasApp extends StatelessWidget {
   }
 }
 
-class Shell extends StatelessWidget {
+class Shell extends StatefulWidget {
   const Shell({super.key, required this.store});
   final AppStore store;
 
   @override
+  State<Shell> createState() => _ShellState();
+}
+
+class _ShellState extends State<Shell> {
+  late final List<Widget> _tabs;
+
+  AppStore get store => widget.store;
+
+  @override
+  void initState() {
+    super.initState();
+    store.addListener(_onStore);
+    _tabs = [
+      HomeScreen(key: const ValueKey('tab-home'), store: store),
+      CatalogScreen(key: const ValueKey('tab-products'), store: store),
+      CompareScreen(key: const ValueKey('tab-compare'), store: store),
+      FavoritesScreen(key: const ValueKey('tab-favorites'), store: store),
+      AccountScreen(key: const ValueKey('tab-account'), store: store),
+    ];
+  }
+
+  @override
+  void dispose() {
+    store.removeListener(_onStore);
+    super.dispose();
+  }
+
+  void _onStore() => setState(() {});
+
+  @override
   Widget build(BuildContext context) {
     final tab = store.tab.clamp(0, AppTab.count - 1);
-    final pages = [
-      HomeScreen(store: store),
-      CatalogScreen(store: store),
-      CompareScreen(store: store),
-      FavoritesScreen(store: store),
-      AccountScreen(store: store),
-    ];
 
     return Scaffold(
+      backgroundColor: Ck.bg,
       appBar: AppBar(
         title: const Row(
           children: [
@@ -86,20 +107,20 @@ class Shell extends StatelessWidget {
           ),
         ],
       ),
-      body: ColoredBox(
-        color: Ck.bg,
-        child: pages[tab],
+      body: IndexedStack(
+        index: tab,
+        sizing: StackFit.expand,
+        children: _tabs,
       ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (store.compareIds.isNotEmpty && store.tab != AppTab.compare) _CompareBar(store: store),
+          if (store.compareIds.isNotEmpty && tab != AppTab.compare) _CompareBar(store: store),
           NavigationBar(
             backgroundColor: Ck.bg2,
             indicatorColor: Ck.mintDim,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            height: 68,
-            selectedIndex: store.tab.clamp(0, AppTab.count - 1),
+            labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+            selectedIndex: tab,
             onDestinationSelected: store.goTab,
             destinations: [
               const NavigationDestination(

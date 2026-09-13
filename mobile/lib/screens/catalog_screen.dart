@@ -78,145 +78,158 @@ class _CatalogScreenState extends State<CatalogScreen> {
       );
     }
 
-    return ColoredBox(
+    final telefonCategory = _categories.firstWhere((c) => c.id == 'telefon');
+
+    return Material(
       color: Ck.bg,
       child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _CategoryStrip(
-          categories: _categories,
-          selectedId: _categoryFilter,
-          onSelect: (id) => setState(() {
-            if (id != 'telefon' && catalogCategoryById(id).status != CatalogCategoryStatus.active) {
-              _categoryFilter = id;
-              _brandFocus = null;
-              return;
-            }
-            _categoryFilter = _categoryFilter == id ? 'telefon' : id;
-            _brandFocus = null;
-          }),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-          child: Text(
-            _categoryFilter == null
-                ? 'Ürün grupları · marka ve seri alt başlıkları altında modeller'
-                : '${catalogCategoryById(_categoryFilter!).label} grubu',
-            style: const TextStyle(color: Ck.mute, fontSize: 13),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-          child: SegmentedButton<_ProductsBrowseMode>(
-            segments: const [
-              ButtonSegment(value: _ProductsBrowseMode.grouped, label: Text('Gruplandırılmış')),
-              ButtonSegment(value: _ProductsBrowseMode.grid, label: Text('Tüm ürünler')),
-            ],
-            selected: {_view},
-            onSelectionChanged: (value) => setState(() {
-              _view = value.first;
-              if (_view == _ProductsBrowseMode.grid) {
-                store.setFilters(store.filters.copy()..query = _search.text);
-              }
-            }),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _search,
-                  onChanged: (value) {
-                    if (_view == _ProductsBrowseMode.grid) {
-                      store.setFilters(store.filters.copy()..query = value);
-                    } else {
-                      setState(() {});
-                    }
-                  },
-                  style: const TextStyle(color: Ck.ink),
-                  decoration: InputDecoration(
-                    hintText: _view == _ProductsBrowseMode.grouped ? 'Marka veya model ara' : 'Ürün, marka veya model ara',
-                    hintStyle: const TextStyle(color: Ck.mute),
-                    filled: true,
-                    fillColor: Ck.panel,
-                    prefixIcon: const Icon(Icons.search, color: Ck.mute),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Ck.line),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Ck.line),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  ),
-                ),
-              ),
-              if (_view == _ProductsBrowseMode.grid) ...[
-                const SizedBox(width: 8),
-                Badge(
-                  isLabelVisible: store.filters.isActive(store.priceMax),
-                  label: Text('${chips.length}'),
-                  child: IconButton.filledTonal(
-                    onPressed: () => _openFilters(context),
-                    icon: const Icon(Icons.tune_rounded),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        if (_view == _ProductsBrowseMode.grid) ...[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
+                _CategoryStrip(
+                  categories: _categories,
+                  selectedId: _categoryFilter,
+                  onSelect: (id) => setState(() {
+                    if (id != 'telefon' && catalogCategoryById(id).status != CatalogCategoryStatus.active) {
+                      _categoryFilter = id;
+                      _brandFocus = null;
+                      return;
+                    }
+                    _categoryFilter = _categoryFilter == id ? 'telefon' : id;
+                    _brandFocus = null;
+                  }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                   child: Text(
-                    '${list.length} ürün · ${sortLabels[store.filters.sort]}',
-                    style: const TextStyle(color: Ck.mute),
+                    _categoryFilter == null
+                        ? 'Ürün grupları · marka ve seri alt başlıkları altında modeller'
+                        : '${catalogCategoryById(_categoryFilter!).label} grubu',
+                    style: const TextStyle(color: Ck.mute, fontSize: 13),
                   ),
                 ),
-                if (store.filters.isActive(store.priceMax))
-                  TextButton(onPressed: _clear, child: const Text('Temizle')),
+                if (_view == _ProductsBrowseMode.grouped)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: ProductGroupHeader(category: telefonCategory),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                  child: SegmentedButton<_ProductsBrowseMode>(
+                    segments: const [
+                      ButtonSegment(value: _ProductsBrowseMode.grouped, label: Text('Gruplu')),
+                      ButtonSegment(value: _ProductsBrowseMode.grid, label: Text('Liste')),
+                    ],
+                    selected: {_view},
+                    onSelectionChanged: (value) => setState(() {
+                      _view = value.first;
+                      if (_view == _ProductsBrowseMode.grid) {
+                        store.setFilters(store.filters.copy()..query = _search.text);
+                      }
+                    }),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _search,
+                          onChanged: (value) {
+                            if (_view == _ProductsBrowseMode.grid) {
+                              store.setFilters(store.filters.copy()..query = value);
+                            } else {
+                              setState(() {});
+                            }
+                          },
+                          style: const TextStyle(color: Ck.ink),
+                          decoration: InputDecoration(
+                            hintText: _view == _ProductsBrowseMode.grouped ? 'Marka veya model ara' : 'Ürün, marka veya model ara',
+                            hintStyle: const TextStyle(color: Ck.mute),
+                            filled: true,
+                            fillColor: Ck.panel,
+                            prefixIcon: const Icon(Icons.search, color: Ck.mute),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(color: Ck.line),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: const BorderSide(color: Ck.line),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          ),
+                        ),
+                      ),
+                      if (_view == _ProductsBrowseMode.grid) ...[
+                        const SizedBox(width: 8),
+                        Badge(
+                          isLabelVisible: store.filters.isActive(store.priceMax),
+                          label: Text('${chips.length}'),
+                          child: IconButton.filledTonal(
+                            onPressed: () => _openFilters(context),
+                            icon: const Icon(Icons.tune_rounded),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                if (_view == _ProductsBrowseMode.grid) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${list.length} ürün · ${sortLabels[store.filters.sort]}',
+                            style: const TextStyle(color: Ck.mute),
+                          ),
+                        ),
+                        if (store.filters.isActive(store.priceMax))
+                          TextButton(onPressed: _clear, child: const Text('Temizle')),
+                      ],
+                    ),
+                  ),
+                  if (chips.isNotEmpty)
+                    SizedBox(
+                      height: 40,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: chips.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
+                        itemBuilder: (_, i) {
+                          final chip = chips[i];
+                          return InputChip(
+                            label: Text(chip.label),
+                            onDeleted: () {
+                              final next = store.filters.withoutChip(chip.id, store.priceMax);
+                              store.setFilters(next);
+                              if (chip.id == 'q') _search.clear();
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                ],
               ],
             ),
           ),
-          if (chips.isNotEmpty)
-            SizedBox(
-              height: 40,
-              child: ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                scrollDirection: Axis.horizontal,
-                itemCount: chips.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
-                itemBuilder: (_, i) {
-                  final chip = chips[i];
-                  return InputChip(
-                    label: Text(chip.label),
-                    onDeleted: () {
-                      final next = store.filters.withoutChip(chip.id, store.priceMax);
-                      store.setFilters(next);
-                      if (chip.id == 'q') _search.clear();
-                    },
-                  );
-                },
-              ),
-            ),
-        ],
-        Expanded(
-          child: _view == _ProductsBrowseMode.grouped
-              ? _GroupedProductsBody(
-                  store: store,
-                  categories: _categories,
-                  categoryFilter: _categoryFilter,
-                  brandFocus: _brandFocus,
-                  onBrandFocus: (brand) => setState(() => _brandFocus = brand),
-                  query: queryGrouped,
-                )
-              : list.isEmpty
+          Expanded(
+            child: _view == _ProductsBrowseMode.grouped
+                ? _GroupedProductsBody(
+                    store: store,
+                    brandFocus: _brandFocus,
+                    onBrandFocus: (brand) => setState(() => _brandFocus = brand),
+                    query: queryGrouped,
+                  )
+                : list.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -238,8 +251,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       itemCount: list.length,
                       itemBuilder: (_, i) => PhoneTile(store: store, phone: list[i], compact: true),
                     ),
-        ),
-      ],
+          ),
+        ],
       ),
     );
   }
@@ -429,72 +442,40 @@ enum _ProductsBrowseMode { grouped, grid }
 class _GroupedProductsBody extends StatelessWidget {
   const _GroupedProductsBody({
     required this.store,
-    required this.categories,
-    required this.categoryFilter,
     required this.brandFocus,
     required this.onBrandFocus,
     required this.query,
   });
 
   final AppStore store;
-  final List<CatalogCategory> categories;
-  final String? categoryFilter;
   final String? brandFocus;
   final ValueChanged<String?> onBrandFocus;
   final String query;
 
   @override
   Widget build(BuildContext context) {
+    if (store.phones.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'Katalog verisi yüklenemedi. Sayfayı yenileyin.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Ck.mute),
+          ),
+        ),
+      );
+    }
     if (store.brandIndex.isEmpty) {
       return const Center(child: CircularProgressIndicator(color: Ck.mint, strokeWidth: 2));
     }
 
-    final showAllGroups = categoryFilter == null;
-    if (showAllGroups) {
-      return ListView(
-        padding: const EdgeInsets.only(bottom: 100),
-        children: [
-          for (final category in categories) ...[
-            ProductGroupHeader(category: category),
-            if (category.status != CatalogCategoryStatus.active)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: Text(
-                  '${category.description}\nBu gruptaki marka ve modeller yakında.',
-                  style: const TextStyle(color: Ck.mute, height: 1.45, fontSize: 13),
-                ),
-              )
-            else
-              SizedBox(
-                height: 420,
-                child: CatalogBrandsView(
-                  store: store,
-                  index: store.brandIndex,
-                  focusBrand: brandFocus,
-                  onFocusBrand: onBrandFocus,
-                  query: query,
-                ),
-              ),
-          ],
-        ],
-      );
-    }
-
-    final telefon = categories.firstWhere((c) => c.id == 'telefon');
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ProductGroupHeader(category: telefon),
-        Expanded(
-          child: CatalogBrandsView(
-            store: store,
-            index: store.brandIndex,
-            focusBrand: brandFocus,
-            onFocusBrand: onBrandFocus,
-            query: query,
-          ),
-        ),
-      ],
+    return CatalogBrandsView(
+      store: store,
+      index: store.brandIndex,
+      focusBrand: brandFocus,
+      onFocusBrand: onBrandFocus,
+      query: query,
     );
   }
 }
