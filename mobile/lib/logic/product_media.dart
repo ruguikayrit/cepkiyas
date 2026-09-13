@@ -1,8 +1,12 @@
 import '../models/phone.dart';
+import 'image_resolve.dart';
 
 List<String> promoImagesFor(Phone phone) {
-  if (phone.promoImages.isNotEmpty) return phone.promoImages;
-  if (phone.image.isNotEmpty) return [phone.image];
+  if (phone.promoImages.isNotEmpty) return resolvePromoUrls(phone.promoImages);
+  if (phone.image.isNotEmpty) {
+    final u = resolveProductImageUrl(phone.image);
+    if (u.isNotEmpty) return [u];
+  }
   return const [];
 }
 
@@ -19,9 +23,12 @@ List<String> buildPromoImagesFromExtra(Map<String, dynamic>? extra) {
   }
   final image = extra['image'] as String?;
   if (image == null || image.isEmpty) return const [];
-  final urls = <String>[image];
-  if (image.contains('width=')) {
-    urls.add(image.replaceFirst(RegExp(r'width=\d+'), 'width=960'));
+  final primary = resolveProductImageUrl(image);
+  if (primary.isEmpty) return const [];
+  final urls = <String>[primary];
+  if (primary.contains('width=')) {
+    final wide = primary.replaceFirst(RegExp(r'width=\d+'), 'width=960');
+    urls.add(wide);
   }
-  return urls.toSet().toList();
+  return resolvePromoUrls(urls);
 }

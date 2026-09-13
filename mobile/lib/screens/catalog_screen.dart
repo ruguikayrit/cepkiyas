@@ -125,11 +125,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
           categoryId: _categoryId,
           brand: _brand,
           brands: brands,
-          onCategory: (id) => setState(() {
-            _categoryId = id;
-            _brand = null;
-            _pickDefaultBrand();
-          }),
+            onCategory: (id) => setState(() {
+              _categoryId = id;
+              if (id != 'telefon') {
+                _brand = null;
+              } else {
+                _pickDefaultBrand();
+              }
+            }),
           onBrand: (brand) => setState(() => _brand = brand),
         ),
         const VerticalDivider(width: 1, thickness: 1, color: Ck.line),
@@ -162,7 +165,6 @@ class _CategoryRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
     return ColoredBox(
       color: Ck.bg2,
       child: SizedBox(
@@ -170,27 +172,21 @@ class _CategoryRail extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 100),
           children: [
-            for (final cat in catalogCategories)
+            for (final cat in catalogCategories) ...[
               _RailItem(
                 label: cat.label,
                 selected: cat.id == categoryId,
                 onTap: () => onCategory(cat.id),
               ),
-            if (categoryId == 'telefon' && brands.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 16, 8, 6),
-                child: Text(
-                  'MARKA',
-                  style: text.labelSmall?.copyWith(color: Ck.mute, letterSpacing: 0.6),
-                ),
-              ),
-              for (final group in brands)
-                _RailItem(
-                  label: '${group.brand} Serisi',
-                  selected: brand == group.brand,
-                  dense: true,
-                  onTap: () => onBrand(group.brand),
-                ),
+              if (cat.id == 'telefon' && categoryId == 'telefon')
+                for (final group in brands)
+                  _RailItem(
+                    label: '${group.brand} Serisi',
+                    selected: brand == group.brand,
+                    dense: true,
+                    nested: true,
+                    onTap: () => onBrand(group.brand),
+                  ),
             ],
           ],
         ),
@@ -205,12 +201,14 @@ class _RailItem extends StatelessWidget {
     required this.selected,
     required this.onTap,
     this.dense = false,
+    this.nested = false,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
   final bool dense;
+  final bool nested;
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +223,7 @@ class _RailItem extends StatelessWidget {
               left: BorderSide(color: selected ? Ck.ink : Colors.transparent, width: 3),
             ),
           ),
-          padding: EdgeInsets.fromLTRB(dense ? 12 : 10, dense ? 10 : 12, 8, dense ? 10 : 12),
+          padding: EdgeInsets.fromLTRB(nested ? 18 : (dense ? 12 : 10), dense ? 10 : 12, 8, dense ? 10 : 12),
           child: Text(
             label,
             maxLines: 3,
@@ -339,7 +337,7 @@ class _ProductRow extends StatelessWidget {
     final hasPrice = phone.priceTRY > 0;
 
     return InkWell(
-      onTap: () => Navigator.of(context).pushNamed('/telefon', arguments: phone.id),
+      onTap: () => Navigator.of(context, rootNavigator: true).pushNamed('/telefon', arguments: phone.id),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
         child: Row(

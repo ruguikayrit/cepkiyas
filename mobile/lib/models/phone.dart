@@ -133,6 +133,7 @@ class Phone {
     String? image,
     List<String>? promoImages,
     List<String>? highlights,
+    String? sourceUrl,
   }) =>
       Phone(
         id: id,
@@ -151,7 +152,7 @@ class Phone {
         highlights: highlights ?? this.highlights,
         image: image ?? this.image,
         promoImages: promoImages ?? this.promoImages,
-        sourceUrl: sourceUrl,
+        sourceUrl: sourceUrl ?? this.sourceUrl,
         seedRatings: seedRatings,
         display: display,
         body: body,

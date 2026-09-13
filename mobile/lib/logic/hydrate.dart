@@ -1,4 +1,5 @@
 import '../models/phone.dart';
+import 'official_sources.dart';
 import 'product_media.dart';
 
 class CatalogRow {
@@ -75,6 +76,14 @@ Phone hydrateListing(CatalogRow row, [Map<String, dynamic>? extra]) {
   ];
   final promoImages = buildPromoImagesFromExtra(extra);
   final image = extra['image'] as String? ?? (promoImages.isNotEmpty ? promoImages.first : '');
+  final sourceUrl = preferOfficialSourceUrl(
+    brand: row.brand,
+    slug: row.slug,
+    current: extra['sourceUrl'] as String? ?? row.sourceUrl,
+  );
+  final displayType = extra['displayType'] as String? ?? 'Belirtilmedi';
+  final refresh = (extra['refreshRate'] as num?)?.toInt() ?? 0;
+  final resolution = extra['resolution'] as String? ?? (displaySize > 0 ? '${displaySize}" panel' : 'Belirtilmedi');
 
   return Phone(
     id: row.id,
@@ -93,7 +102,7 @@ Phone hydrateListing(CatalogRow row, [Map<String, dynamic>? extra]) {
     highlights: highlights.isEmpty ? [row.brand, '${row.year}'] : highlights,
     image: image,
     promoImages: promoImages,
-    sourceUrl: extra['sourceUrl'] as String? ?? row.sourceUrl,
+    sourceUrl: sourceUrl,
     seedRatings: const SeedRatings(
       average: 7,
       count: 0,
@@ -105,9 +114,9 @@ Phone hydrateListing(CatalogRow row, [Map<String, dynamic>? extra]) {
     ),
     display: DisplaySpec(
       size: displaySize,
-      type: extra['displayType'] as String? ?? 'Belirtilmedi',
-      resolution: 'Belirtilmedi',
-      refreshRate: (extra['refreshRate'] as num?)?.toInt() ?? 0,
+      type: displayType,
+      resolution: resolution,
+      refreshRate: refresh,
       brightness: (extra['brightness'] as num?)?.toInt() ?? 0,
       protection: 'Belirtilmedi',
       ppi: 0,

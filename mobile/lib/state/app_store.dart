@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../logic/catalog_grouping.dart';
 import '../logic/catalog_window.dart';
+import '../logic/official_inherit.dart';
 import '../logic/filters.dart';
 import '../logic/hydrate.dart';
 import '../logic/ratings.dart';
@@ -44,12 +45,14 @@ class AppStore extends ChangeNotifier {
     final official = (jsonDecode(officialRaw) as List)
         .map((e) => Phone.fromJson(e as Map<String, dynamic>))
         .toList();
-    final officialIds = official.map((phone) => phone.id).toSet();
+    final officialsById = {for (final p in official) p.id: p};
+    final officialIds = officialsById.keys.toSet();
     final listing = (jsonDecode(listingRaw) as List)
         .map((e) => CatalogRow.fromJson(e as Map<String, dynamic>))
         .where((row) => row.officialId == null || !officialIds.contains(row.officialId))
         .map((row) => hydrateListing(row, overlay[row.id] as Map<String, dynamic>?));
     phones = [...official, ...listing]
+        .map((p) => applyOfficialInheritance(p, officialsById))
         .where(CatalogWindow.includes)
         .map(CatalogWindow.withDisplayYear)
         .toList();

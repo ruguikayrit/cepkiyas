@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../logic/format.dart';
 import '../logic/product_media.dart';
@@ -73,6 +74,29 @@ class _DetailScreenState extends State<DetailScreen> {
                 selected: widget.store.isCompared(phone.id),
                 onTap: () => widget.store.toggleCompare(phone.id),
               ),
+              if (phone.sourceUrl.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: phone.sourceUrl));
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Resmi kaynak bağlantısı kopyalandı:\n${phone.sourceUrl}')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                    label: Text(
+                      phone.sourceUrl.contains('apple.com')
+                          ? 'Apple teknik özellikler'
+                          : 'Resmi özellik kaynağı',
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 20),
               _SectionHeading('Tanıtım'),
               if (phone.colors.isNotEmpty) ...[
