@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'typography.dart';
 
 class Ck {
   static const bg = Color(0xFFFFFFFF);
@@ -26,12 +26,7 @@ class Ck {
   }
 
   static ThemeData theme() {
-    final text = GoogleFonts.plusJakartaSansTextTheme(
-      ThemeData(brightness: Brightness.light).textTheme.apply(
-            bodyColor: ink,
-            displayColor: ink,
-          ),
-    );
+    final text = CkType.textTheme();
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
@@ -54,12 +49,40 @@ class Ck {
         centerTitle: true,
         titleSpacing: 0,
         toolbarHeight: 64,
-        titleTextStyle: GoogleFonts.plusJakartaSans(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.6,
-          color: mint,
+        titleTextStyle: CkType.brandWordmark(26).copyWith(color: mint),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: panel2,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        labelStyle: CkType.textTheme().bodyMedium?.copyWith(color: mute),
+        hintStyle: CkType.textTheme().bodyMedium?.copyWith(color: mute),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: line)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: line)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: mint, width: 1.5)),
+        errorStyle: CkType.textTheme().bodySmall?.copyWith(color: danger, fontSize: 12),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          textStyle: CkType.textTheme().labelLarge,
+          minimumSize: const Size.fromHeight(48),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          textStyle: CkType.textTheme().labelLarge,
+          minimumSize: const Size.fromHeight(48),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(textStyle: CkType.textTheme().labelLarge?.copyWith(color: mint)),
+      ),
+      listTileTheme: ListTileThemeData(
+        titleTextStyle: CkType.textTheme().titleMedium,
+        subtitleTextStyle: CkType.textTheme().bodySmall,
+        contentPadding: EdgeInsets.zero,
       ),
       chipTheme: const ChipThemeData(
         backgroundColor: panel2,
@@ -76,11 +99,7 @@ class Ck {
           );
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          return GoogleFonts.plusJakartaSans(
-            fontSize: 11,
-            fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
-            color: states.contains(WidgetState.selected) ? navActive : navMute,
-          );
+          return CkType.navLabel(selected: states.contains(WidgetState.selected));
         }),
       ),
       dividerColor: line,

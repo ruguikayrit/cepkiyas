@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../navigation/app_tab.dart';
 import '../state/app_store.dart';
 import '../theme.dart';
+import '../typography.dart';
 import 'auth/change_password_screen.dart';
 import 'auth/login_screen.dart';
 import 'auth/register_screen.dart';
@@ -13,6 +14,8 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
       children: [
@@ -22,14 +25,11 @@ class AccountScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Giriş yap veya kayıt ol',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                ),
+                Text('Giriş yap veya kayıt ol', style: text.headlineSmall),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Favoriler, oylar ve hesap ayarların seninle kalsın.',
-                  style: TextStyle(color: Ck.mute, height: 1.4),
+                  style: text.bodyMedium?.copyWith(color: Ck.mute),
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
@@ -37,21 +37,19 @@ class AccountScreen extends StatelessWidget {
                   style: FilledButton.styleFrom(
                     backgroundColor: Ck.mint,
                     foregroundColor: Colors.white,
-                    minimumSize: const Size.fromHeight(44),
                   ),
                   child: const Text('Giriş yap'),
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
                   onPressed: () => _openRegister(context),
-                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
                   child: const Text('Kayıt ol'),
                 ),
               ],
             ),
           ),
         ] else ...[
-          _SectionTitle('Kullanıcı bilgileri'),
+          _SectionTitle('Temel bilgiler'),
           _Card(
             child: Column(
               children: [
@@ -60,16 +58,22 @@ class AccountScreen extends StatelessWidget {
                   backgroundColor: Ck.mintDim,
                   child: Text(
                     _initials(store.session!.name),
-                    style: const TextStyle(color: Ck.mint, fontWeight: FontWeight.w800, fontSize: 18),
+                    style: text.titleLarge?.copyWith(color: Ck.mint, fontWeight: FontWeight.w800),
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text(store.session!.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                Text(store.session!.email, style: const TextStyle(color: Ck.mute)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
+                _InfoRow(label: 'Ad soyad', value: store.session!.name),
+                const Divider(height: 1),
+                _InfoRow(label: 'E-posta', value: store.session!.email),
+                const Divider(height: 1),
+                _InfoRow(
+                  label: 'Telefon',
+                  value: store.session!.phone.isEmpty ? '—' : store.session!.phone,
+                ),
+                const SizedBox(height: 8),
                 _ActionTile(
-                  icon: Icons.badge_outlined,
-                  label: 'Profili düzenle',
+                  icon: Icons.edit_outlined,
+                  label: 'Bilgileri düzenle',
                   onTap: () => _editProfile(context),
                 ),
               ],
@@ -97,14 +101,14 @@ class AccountScreen extends StatelessWidget {
               ],
             ),
           ),
-          _SectionTitle('Güvenlik ayarları'),
+          _SectionTitle('Güvenlik'),
           _Card(
             child: Column(
               children: [
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('İki adımlı doğrulama'),
-                  subtitle: const Text('Yakında', style: TextStyle(color: Ck.mute, fontSize: 12)),
+                  title: Text('İki adımlı doğrulama', style: text.titleMedium),
+                  subtitle: Text('Yakında', style: text.bodySmall),
                   value: false,
                   onChanged: null,
                 ),
@@ -112,8 +116,15 @@ class AccountScreen extends StatelessWidget {
                 _ActionTile(
                   icon: Icons.devices_other_outlined,
                   label: 'Aktif oturumlar',
-                  subtitle: 'Bu cihaz',
-                  onTap: () {},
+                  subtitle: 'Bu cihaz · güvenli',
+                  onTap: () => _showSessions(context),
+                ),
+                const Divider(height: 1),
+                _ActionTile(
+                  icon: Icons.shield_outlined,
+                  label: 'Hesap güvenliği',
+                  subtitle: 'Şifre ve oturum özeti',
+                  onTap: () => _showSecuritySummary(context),
                 ),
                 const Divider(height: 1),
                 _ActionTile(
@@ -125,20 +136,6 @@ class AccountScreen extends StatelessWidget {
             ),
           ),
         ],
-        _SectionTitle('Uygulama'),
-        _Card(
-          child: Column(
-            children: [
-              _StatRow(label: 'Katalogdaki modeller', value: '${store.phones.length}'),
-              const Divider(height: 1),
-              _StatRow(label: 'Verdiğiniz oylar', value: '${store.votes.length}'),
-              const Divider(height: 1),
-              _StatRow(label: 'Kıyas sepeti', value: '${store.compareIds.length} / ${AppStore.maxCompare}'),
-              const Divider(height: 1),
-              _StatRow(label: 'Favoriler', value: '${store.favoriteIds.length}'),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -148,6 +145,38 @@ class AccountScreen extends StatelessWidget {
     if (parts.isEmpty) return 'TK';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return '${parts.first[0]}${parts[1][0]}'.toUpperCase();
+  }
+
+  void _showSessions(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Aktif oturumlar'),
+        content: const Text(
+          'Şu an yalnızca bu cihazda oturum açık. Diğer cihaz yönetimi yakında eklenecek.',
+          style: TextStyle(height: 1.45),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tamam')),
+        ],
+      ),
+    );
+  }
+
+  void _showSecuritySummary(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hesap güvenliği'),
+        content: const Text(
+          'Şifrenizi düzenli güncelleyin. İki adımlı doğrulama ve e-posta doğrulama yakında devreye alınacak.',
+          style: TextStyle(height: 1.45),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tamam')),
+        ],
+      ),
+    );
   }
 
   Future<void> _openLogin(BuildContext context) async {
@@ -179,7 +208,7 @@ class AccountScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text('Profili düzenle', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              Text('Bilgileri düzenle', style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 12),
               TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Ad soyad')),
               const SizedBox(height: 8),
@@ -210,10 +239,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 18, 4, 8),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Ck.mute, letterSpacing: 0.3),
-      ),
+      child: Text(text.toUpperCase(), style: CkType.sectionLabel()),
     );
   }
 }
@@ -236,6 +262,30 @@ class _Card extends StatelessWidget {
   }
 }
 
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({required this.label, required this.value});
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 96,
+            child: Text(label, style: text.bodySmall?.copyWith(color: Ck.mute)),
+          ),
+          Expanded(child: Text(value, style: text.titleMedium)),
+        ],
+      ),
+    );
+  }
+}
+
 class _ActionTile extends StatelessWidget {
   const _ActionTile({
     required this.icon,
@@ -253,32 +303,14 @@ class _ActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: enabled ? Ck.mint : Ck.mute),
-      title: Text(label, style: TextStyle(color: enabled ? Ck.ink : Ck.mute)),
-      subtitle: subtitle != null ? Text(subtitle!, style: const TextStyle(color: Ck.mute, fontSize: 12)) : null,
+      title: Text(label, style: text.titleMedium?.copyWith(color: enabled ? Ck.ink : Ck.mute)),
+      subtitle: subtitle != null ? Text(subtitle!, style: text.bodySmall) : null,
       trailing: enabled ? const Icon(Icons.chevron_right, color: Ck.mute) : null,
       onTap: enabled ? onTap : null,
-    );
-  }
-}
-
-class _StatRow extends StatelessWidget {
-  const _StatRow({required this.label, required this.value});
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: [
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
-        ],
-      ),
     );
   }
 }

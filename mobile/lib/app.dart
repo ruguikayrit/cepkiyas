@@ -11,6 +11,7 @@ import 'screens/home_screen.dart';
 import 'screens/search_screen.dart';
 import 'state/app_store.dart';
 import 'theme.dart';
+import 'typography.dart';
 import 'widgets/brand_lockup.dart';
 import 'widgets/widgets.dart';
 
@@ -126,11 +127,7 @@ class _ShellState extends State<Shell> {
                   );
                 }),
                 labelTextStyle: WidgetStateProperty.resolveWith((states) {
-                  return TextStyle(
-                    fontSize: 11,
-                    fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
-                    color: states.contains(WidgetState.selected) ? Ck.navActive : Ck.navMute,
-                  );
+                  return CkType.navLabel(selected: states.contains(WidgetState.selected));
                 }),
               ),
             ),

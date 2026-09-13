@@ -28,7 +28,7 @@ class PhoneVisual extends StatelessWidget {
               child: Text(
                 phone.brand,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Ck.mute, fontSize: 10),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Ck.mute, letterSpacing: 0),
               ),
             )
           : phone.image.startsWith('http')
@@ -45,7 +45,7 @@ class PhoneVisual extends StatelessWidget {
                   errorBuilder: (context, error, stack) => Center(
                     child: Text(
                       phone.brand,
-                      style: const TextStyle(color: Ck.mute, fontSize: 10),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Ck.mute, letterSpacing: 0),
                     ),
                   ),
                 ),
@@ -81,7 +81,7 @@ class ScorePill extends StatelessWidget {
           ),
           Text(
             label.toUpperCase(),
-            style: const TextStyle(fontSize: 9, color: Ck.mute, letterSpacing: 0.4),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Ck.mute, letterSpacing: 0.5),
           ),
         ],
       ),
@@ -117,7 +117,7 @@ class ScoreRing extends StatelessWidget {
                 formatScore(value),
                 style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, letterSpacing: -0.4),
               ),
-              Text(label, style: const TextStyle(fontSize: 8, color: Ck.mute)),
+              Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Ck.mute, fontSize: 10)),
             ],
           ),
         ],
