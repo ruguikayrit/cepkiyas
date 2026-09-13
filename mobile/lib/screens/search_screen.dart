@@ -69,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
           if (query.trim().isNotEmpty)
             ListTile(
               leading: const Icon(Icons.storefront_outlined),
-              title: Text('Katalogda tüm sonuçları gör (${widget.store.searchCount(query)})'),
+              title: Text('Ürünlerde tüm sonuçları gör (${widget.store.searchCount(query)})'),
               onTap: _openCatalog,
             ),
         ],

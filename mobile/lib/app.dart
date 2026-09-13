@@ -92,7 +92,7 @@ class Shell extends StatelessWidget {
             onDestinationSelected: store.goTab,
             destinations: [
               const NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Ana'),
-              const NavigationDestination(icon: Icon(Icons.grid_view_outlined), selectedIcon: Icon(Icons.grid_view_rounded), label: 'Katalog'),
+              const NavigationDestination(icon: Icon(Icons.category_outlined), selectedIcon: Icon(Icons.category_rounded), label: 'Ürünler'),
               NavigationDestination(
                 icon: Badge(
                   isLabelVisible: store.compareIds.isNotEmpty,

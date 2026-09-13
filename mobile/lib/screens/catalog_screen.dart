@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../logic/catalog_grouping.dart';
 import '../logic/catalog_taxonomy.dart';
 import '../logic/filters.dart';
 import '../logic/format.dart';
 import '../state/app_store.dart';
 import '../theme.dart';
-import '../widgets/catalog_brands_view.dart';
+import '../widgets/product_groups_view.dart';
 import '../widgets/widgets.dart';
 
 class CatalogScreen extends StatefulWidget {
@@ -19,9 +18,8 @@ class CatalogScreen extends StatefulWidget {
 
 class _CatalogScreenState extends State<CatalogScreen> {
   late final TextEditingController _search;
-  var _view = _CatalogBrowseMode.brands;
-  String _categoryId = 'telefon';
-  String? _brandFocus;
+  var _view = _ProductsBrowseMode.grouped;
+  String? _categoryFilter;
 
   AppStore get store => widget.store;
 
@@ -37,63 +35,54 @@ class _CatalogScreenState extends State<CatalogScreen> {
     super.dispose();
   }
 
-  CatalogCategory get _category => catalogCategoryById(_categoryId);
-
-  bool get _categoryActive => _category.status == CatalogCategoryStatus.active;
+  List<CatalogCategory> get _categories => [
+        for (final item in catalogCategories)
+          item.id == 'telefon'
+              ? CatalogCategory(
+                  id: item.id,
+                  label: item.label,
+                  description: item.description,
+                  icon: item.icon,
+                  status: item.status,
+                  count: store.phones.length,
+                )
+              : item,
+      ];
 
   @override
   Widget build(BuildContext context) {
-    final categories = [
-      for (final item in catalogCategories)
-        item.id == 'telefon' ? CatalogCategory(id: item.id, label: item.label, description: item.description, icon: item.icon, status: item.status, count: store.phones.length) : item,
-    ];
-
-    if (!_categoryActive) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _CategoryStrip(
-            categories: categories,
-            selectedId: _categoryId,
-            onSelect: _selectCategory,
-          ),
-          Expanded(child: _CategorySoonBody(category: _category)),
-        ],
-      );
-    }
-
     final list = store.filtered;
     final chips = store.filters.chips(store.priceMax);
-    final brandIndex = buildBrandIndex(store.phones);
-    final searchForBrands = _view == _CatalogBrowseMode.brands ? _search.text : '';
+    final queryGrouped = _view == _ProductsBrowseMode.grouped ? _search.text : '';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _CategoryStrip(
-          categories: categories,
-          selectedId: _categoryId,
-          onSelect: _selectCategory,
+          categories: _categories,
+          selectedId: _categoryFilter,
+          onSelect: (id) => setState(() => _categoryFilter = _categoryFilter == id ? null : id),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
           child: Text(
-            _category.description,
+            _categoryFilter == null
+                ? 'Ürün grupları · marka ve seri alt başlıkları altında modeller'
+                : '${catalogCategoryById(_categoryFilter!).label} grubu',
             style: const TextStyle(color: Ck.mute, fontSize: 13),
           ),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-          child: SegmentedButton<_CatalogBrowseMode>(
+          child: SegmentedButton<_ProductsBrowseMode>(
             segments: const [
-              ButtonSegment(value: _CatalogBrowseMode.brands, label: Text('Markalar & seriler')),
-              ButtonSegment(value: _CatalogBrowseMode.products, label: Text('Tüm ürünler')),
+              ButtonSegment(value: _ProductsBrowseMode.grouped, label: Text('Gruplandırılmış')),
+              ButtonSegment(value: _ProductsBrowseMode.grid, label: Text('Tüm ürünler')),
             ],
             selected: {_view},
             onSelectionChanged: (value) => setState(() {
               _view = value.first;
-              if (_view == _CatalogBrowseMode.products) {
-                _brandFocus = null;
+              if (_view == _ProductsBrowseMode.grid) {
                 store.setFilters(store.filters.copy()..query = _search.text);
               }
             }),
@@ -107,7 +96,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 child: TextField(
                   controller: _search,
                   onChanged: (value) {
-                    if (_view == _CatalogBrowseMode.products) {
+                    if (_view == _ProductsBrowseMode.grid) {
                       store.setFilters(store.filters.copy()..query = value);
                     } else {
                       setState(() {});
@@ -115,7 +104,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   },
                   style: const TextStyle(color: Ck.ink),
                   decoration: InputDecoration(
-                    hintText: _view == _CatalogBrowseMode.brands ? 'Marka veya model ara' : 'Ürün, marka veya model ara',
+                    hintText: _view == _ProductsBrowseMode.grouped ? 'Marka veya model ara' : 'Ürün, marka veya model ara',
                     hintStyle: const TextStyle(color: Ck.mute),
                     filled: true,
                     fillColor: Ck.panel,
@@ -132,7 +121,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   ),
                 ),
               ),
-              if (_view == _CatalogBrowseMode.products) ...[
+              if (_view == _ProductsBrowseMode.grid) ...[
                 const SizedBox(width: 8),
                 Badge(
                   isLabelVisible: store.filters.isActive(store.priceMax),
@@ -146,7 +135,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ],
           ),
         ),
-        if (_view == _CatalogBrowseMode.products) ...[
+        if (_view == _ProductsBrowseMode.grid) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Row(
@@ -185,13 +174,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
         ],
         Expanded(
-          child: _view == _CatalogBrowseMode.brands
-              ? CatalogBrandsView(
+          child: _view == _ProductsBrowseMode.grouped
+              ? ProductGroupsView(
                   store: store,
-                  index: brandIndex,
-                  focusBrand: _brandFocus,
-                  onFocusBrand: (brand) => setState(() => _brandFocus = brand),
-                  query: searchForBrands,
+                  categories: _categories,
+                  onlyCategoryId: _categoryFilter,
+                  query: queryGrouped,
                 )
               : list.isEmpty
                   ? Center(
@@ -218,13 +206,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
         ),
       ],
     );
-  }
-
-  void _selectCategory(String id) {
-    setState(() {
-      _categoryId = id;
-      _brandFocus = null;
-    });
   }
 
   void _clear() {
@@ -407,7 +388,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   }
 }
 
-enum _CatalogBrowseMode { brands, products }
+enum _ProductsBrowseMode { grouped, grid }
 
 class _CategoryStrip extends StatelessWidget {
   const _CategoryStrip({
@@ -417,7 +398,7 @@ class _CategoryStrip extends StatelessWidget {
   });
 
   final List<CatalogCategory> categories;
-  final String selectedId;
+  final String? selectedId;
   final ValueChanged<String> onSelect;
 
   @override
@@ -473,41 +454,6 @@ class _CategoryStrip extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _CategorySoonBody extends StatelessWidget {
-  const _CategorySoonBody({required this.category});
-
-  final CatalogCategory category;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(category.icon, size: 48, color: Ck.mute),
-            const SizedBox(height: 16),
-            Text(category.label, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 8),
-            Text(
-              category.description,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Ck.mute, height: 1.4),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Bu ürün grubu katalogda hazırlanıyor. Şimdilik Telefon bölümünde tüm modelleri inceleyebilirsiniz.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Ck.mute, fontSize: 13, height: 1.45),
-            ),
-          ],
-        ),
       ),
     );
   }
