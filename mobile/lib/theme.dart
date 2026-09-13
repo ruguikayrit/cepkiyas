@@ -13,6 +13,11 @@ class Ck {
   static const mintDim = Color(0xFFE8EFFF);
   static const gold = Color(0xFFD97706);
   static const danger = Color(0xFFDC4C54);
+  static const navBg = Color(0xFF0B1220);
+  static const navInk = Color(0xFFE8EDF5);
+  static const navMute = Color(0xFF8B939E);
+  static const navActive = Color(0xFF6EA8FF);
+  static const navIndicator = Color(0xFF1A2740);
 
   static Color tone(double score) {
     if (score >= 88) return mint;
@@ -62,14 +67,19 @@ class Ck {
         side: BorderSide(color: line),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: bg,
-        indicatorColor: mintDim,
+        backgroundColor: navBg,
+        indicatorColor: navIndicator,
         elevation: 0,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          return IconThemeData(
+            color: states.contains(WidgetState.selected) ? navActive : navMute,
+          );
+        }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           return GoogleFonts.plusJakartaSans(
             fontSize: 11,
             fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
-            color: states.contains(WidgetState.selected) ? mint : mute,
+            color: states.contains(WidgetState.selected) ? navActive : navMute,
           );
         }),
       ),

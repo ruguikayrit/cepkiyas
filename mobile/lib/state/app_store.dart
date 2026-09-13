@@ -10,11 +10,14 @@ import '../logic/hydrate.dart';
 import '../logic/ratings.dart';
 import '../logic/score.dart';
 import '../models/phone.dart';
+import '../models/user_account.dart';
 
 class AppStore extends ChangeNotifier {
   static const _compareKey = 'cepkiyas.compare.v1';
   static const _favoritesKey = 'cepkiyas.favorites.v1';
   static const _votesKey = 'cepkiyas.votes.v1';
+  static const _sessionKey = 'cepkiyas.session.v1';
+  static const _usersKey = 'cepkiyas.users.v1';
   static const maxCompare = 4;
 
   List<Phone> phones = [];
@@ -22,9 +25,13 @@ class AppStore extends ChangeNotifier {
   List<String> compareIds = [];
   List<String> favoriteIds = [];
   Map<String, UserVote> votes = {};
+  UserAccount? session;
+  Map<String, Map<String, dynamic>> _users = {};
   late ScoreEngine scores;
   late CatalogFilters filters;
   int tab = 0;
+
+  bool get isSignedIn => session != null;
 
   Future<void> load() async {
     final officialRaw = await rootBundle.loadString('assets/data/phones.json');
@@ -55,7 +62,114 @@ class AppStore extends ChangeNotifier {
       final map = jsonDecode(votesRaw) as Map<String, dynamic>;
       votes = map.map((k, v) => MapEntry(k, UserVote.fromJson(v as Map<String, dynamic>)));
     }
+    final usersRaw = prefs.getString(_usersKey);
+    if (usersRaw != null) {
+      final map = jsonDecode(usersRaw) as Map<String, dynamic>;
+      _users = map.map((k, v) => MapEntry(k, Map<String, dynamic>.from(v as Map)));
+    }
+    final sessionEmail = prefs.getString(_sessionKey);
+    if (sessionEmail != null && _users.containsKey(sessionEmail)) {
+      final profile = _users[sessionEmail]!;
+      session = UserAccount(
+        email: sessionEmail,
+        name: profile['name'] as String? ?? '',
+        phone: profile['phone'] as String? ?? '',
+      );
+    }
     notifyListeners();
+  }
+
+  String _normEmail(String email) => email.trim().toLowerCase();
+
+  Future<String?> signUp({
+    required String name,
+    required String email,
+    required String phone,
+    required String password,
+    required String confirm,
+  }) async {
+    final mail = _normEmail(email);
+    if (name.trim().length < 2) return 'Ad soyad girin.';
+    if (!mail.contains('@') || !mail.contains('.')) return 'Geçerli bir e-posta girin.';
+    if (password.length < 6) return 'Şifre en az 6 karakter olmalı.';
+    if (password != confirm) return 'Şifreler eşleşmiyor.';
+    if (_users.containsKey(mail)) return 'Bu e-posta ile kayıt zaten var.';
+    _users = {
+      ..._users,
+      mail: {
+        'name': name.trim(),
+        'phone': phone.trim(),
+        'password': password,
+      },
+    };
+    session = UserAccount(email: mail, name: name.trim(), phone: phone.trim());
+    await _persistAuth();
+    notifyListeners();
+    return null;
+  }
+
+  Future<String?> signIn({required String email, required String password}) async {
+    final mail = _normEmail(email);
+    final user = _users[mail];
+    if (user == null) return 'E-posta veya şifre hatalı.';
+    if (user['password'] != password) return 'E-posta veya şifre hatalı.';
+    session = UserAccount(
+      email: mail,
+      name: user['name'] as String? ?? '',
+      phone: user['phone'] as String? ?? '',
+    );
+    await _persistAuth();
+    notifyListeners();
+    return null;
+  }
+
+  Future<void> signOut() async {
+    session = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_sessionKey);
+    notifyListeners();
+  }
+
+  Future<String?> changePassword({
+    required String current,
+    required String next,
+    required String confirm,
+  }) async {
+    final mail = session?.email;
+    if (mail == null) return 'Oturum açık değil.';
+    final user = _users[mail];
+    if (user == null || user['password'] != current) return 'Mevcut şifre hatalı.';
+    if (next.length < 6) return 'Yeni şifre en az 6 karakter olmalı.';
+    if (next != confirm) return 'Yeni şifreler eşleşmiyor.';
+    _users = {
+      ..._users,
+      mail: {...user, 'password': next},
+    };
+    await _persistAuth();
+    notifyListeners();
+    return null;
+  }
+
+  Future<void> updateProfile({required String name, required String phone}) async {
+    final mail = session?.email;
+    if (mail == null) return;
+    final user = _users[mail];
+    if (user == null) return;
+    _users = {
+      ..._users,
+      mail: {...user, 'name': name.trim(), 'phone': phone.trim()},
+    };
+    session = session!.copyWith(name: name.trim(), phone: phone.trim());
+    await _persistAuth();
+    notifyListeners();
+  }
+
+  Future<void> _persistAuth() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_usersKey, jsonEncode(_users));
+    if (session != null) {
+      await prefs.setString(_sessionKey, session!.email);
+    }
   }
 
   Phone? byId(String id) {

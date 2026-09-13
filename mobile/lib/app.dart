@@ -115,9 +115,30 @@ class _ShellState extends State<Shell> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (store.compareIds.isNotEmpty && tab != AppTab.compare) _CompareBar(store: store),
-          NavigationBar(
-            backgroundColor: Ck.bg,
-            indicatorColor: Ck.mintDim,
+          Theme(
+            data: Theme.of(context).copyWith(
+              navigationBarTheme: NavigationBarThemeData(
+                backgroundColor: Ck.navBg,
+                indicatorColor: Ck.navIndicator,
+                iconTheme: WidgetStateProperty.resolveWith((states) {
+                  return IconThemeData(
+                    color: states.contains(WidgetState.selected) ? Ck.navActive : Ck.navMute,
+                  );
+                }),
+                labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                  return TextStyle(
+                    fontSize: 11,
+                    fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
+                    color: states.contains(WidgetState.selected) ? Ck.navActive : Ck.navMute,
+                  );
+                }),
+              ),
+            ),
+            child: NavigationBar(
+            backgroundColor: Ck.navBg,
+            indicatorColor: Ck.navIndicator,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.transparent,
             labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
             selectedIndex: tab,
             onDestinationSelected: store.goTab,
@@ -156,6 +177,7 @@ class _ShellState extends State<Shell> {
                 label: 'Hesabım',
               ),
             ],
+            ),
           ),
         ],
       ),
