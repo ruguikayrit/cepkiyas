@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 
-import 'app.dart';
-import 'state/app_store.dart';
+import 'app_bootstrap.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,9 +19,5 @@ Future<void> main() async {
       ),
     );
   };
-  Intl.defaultLocale = 'tr_TR';
-  await initializeDateFormatting('tr_TR');
-  final store = AppStore();
-  await store.load();
-  runApp(CepKiyasApp(store: store));
+  runApp(const AppBootstrap());
 }

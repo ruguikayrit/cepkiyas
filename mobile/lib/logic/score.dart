@@ -134,6 +134,7 @@ int _ipRank(String rating) {
 
 _Range _range(Iterable<double> values) {
   final list = values.toList();
+  if (list.isEmpty) return const _Range(0, 1);
   return _Range(list.reduce((a, b) => a < b ? a : b), list.reduce((a, b) => a > b ? a : b));
 }
 

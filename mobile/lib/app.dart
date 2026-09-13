@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'screens/detail_screen.dart';
 import 'screens/search_screen.dart';
-import 'screens/splash_screen.dart';
+import 'shell.dart';
 import 'state/app_store.dart';
 import 'theme.dart';
 
@@ -24,7 +24,7 @@ class CepKiyasApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: SplashScreen(store: store),
+      home: Shell(store: store),
       onGenerateRoute: (settings) {
         if (settings.name == '/telefon') {
           return MaterialPageRoute(

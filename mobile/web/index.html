@@ -33,6 +33,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     html, body, flutter-view, flt-glass-pane {
       background: #ffffff !important;
@@ -45,6 +46,10 @@
   </style>
 </head>
 <body>
+  <noscript>TeknoKıyas için JavaScript gerekli.</noscript>
+  <div id="boot-hint" style="font-family:system-ui,sans-serif;text-align:center;padding:24px;color:#6b7280;">
+    TeknoKıyas yükleniyor…
+  </div>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then((regs) => {

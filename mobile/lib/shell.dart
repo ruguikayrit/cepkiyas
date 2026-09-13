@@ -56,7 +56,7 @@ class _ShellState extends State<Shell> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        toolbarHeight: 88,
+        toolbarHeight: 72,
         title: SizedBox(
           width: double.infinity,
           child: Stack(
@@ -65,8 +65,8 @@ class _ShellState extends State<Shell> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const BrandLockup(height: 28),
-                  const SizedBox(height: 4),
+                  const BrandLockup(height: 26),
+                  const SizedBox(height: 2),
                   BrandTagline(
                     align: TextAlign.center,
                     color: Ck.mute.withValues(alpha: 0.9),
