@@ -1,6 +1,6 @@
 {
-    "name": "cepkiyas_app",
-    "short_name": "cepkiyas_app",
+    "name": "TeknoKıyas",
+    "short_name": "TeknoKıyas",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
