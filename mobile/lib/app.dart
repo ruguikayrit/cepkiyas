@@ -88,14 +88,24 @@ class _ShellState extends State<Shell> {
     return Scaffold(
       backgroundColor: Ck.bg,
       appBar: AppBar(
-        title: const BrandLockup(height: 36),
-        titleSpacing: 12,
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pushNamed('/ara'),
-            icon: const Icon(Icons.search_rounded),
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        title: SizedBox(
+          width: double.infinity,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const BrandLockup(height: 32),
+              Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  onPressed: () => Navigator.of(context).pushNamed('/ara'),
+                  icon: const Icon(Icons.search_rounded),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       body: ColoredBox(
         color: Ck.bg,

@@ -21,7 +21,7 @@ class AccountScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Ck.line),
           ),
-          child: const BrandLockup(height: 44),
+          child: const Center(child: BrandLockup(height: 40)),
         ),
         const SizedBox(height: 16),
         _StatTile(label: 'Katalogdaki modeller', value: '${store.phones.length}'),

@@ -46,8 +46,8 @@ class Ck {
         foregroundColor: ink,
         elevation: 0,
         scrolledUnderElevation: 0,
-        centerTitle: false,
-        titleSpacing: 12,
+        centerTitle: true,
+        titleSpacing: 0,
         toolbarHeight: 64,
         titleTextStyle: GoogleFonts.plusJakartaSans(
           fontSize: 20,
