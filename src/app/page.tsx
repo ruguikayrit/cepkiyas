@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { officialPhones, phones } from "@/data/phones";
 import { PhoneCard } from "@/components/phone-card";
-import { formatNumber } from "@/lib/format";
 import { technicalScore } from "@/lib/score";
 import { comparePath } from "@/lib/compare";
 
@@ -18,34 +17,9 @@ export default function Home() {
 
   return (
     <div className="shell">
-      <section className="hero">
-        <div>
-          <small className="mute">TeknoKıyas · hızlı · ölçülebilir · tarafsız</small>
-          <h1>Hangi telefon gerçekten önde?</h1>
-          <p>
-            Teknik puan, gruplu özellik tablosu ve satır kazananı. Arama anında,
-            kıyas en fazla dört modele kadar, kullanıcı oyu küresel skora eklenir.
-          </p>
-        </div>
-        <div className="hero-stats">
-          <div className="stat">
-            <strong>{phones.length}</strong>
-            <span className="mute">Hazır model</span>
-          </div>
-          <div className="stat">
-            <strong>{formatNumber(phones.reduce((sum, phone) => sum + phone.seedRatings.count, 0))}</strong>
-            <span className="mute">Küresel oy</span>
-          </div>
-          <div className="stat">
-            <strong>4</strong>
-            <span className="mute">Modele kadar kıyas</span>
-          </div>
-        </div>
-      </section>
-
       <div className="section-head">
         <h2>Teknik skoru en yüksekler</h2>
-        <Link href="/telefonlar" className="mute">
+        <Link href="/katalog/telefon" className="mute">
           Tüm katalog →
         </Link>
       </div>
@@ -84,7 +58,10 @@ export default function Home() {
       </div>
       <div className="brand-row">
         {brands.map((brand) => (
-          <Link key={brand} href={`/telefonlar?marka=${encodeURIComponent(brand)}`}>
+          <Link
+            key={brand}
+            href={`/katalog/telefon?gorunum=markalar&marka=${encodeURIComponent(brand)}`}
+          >
             {brand}
           </Link>
         ))}

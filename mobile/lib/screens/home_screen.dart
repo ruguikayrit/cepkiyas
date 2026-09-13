@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../logic/format.dart';
 import '../state/app_store.dart';
 import '../theme.dart';
 import '../widgets/widgets.dart';
@@ -21,41 +20,9 @@ class HomeScreen extends StatelessWidget {
     final featured = store.phones.where((phone) => phone.image.isNotEmpty).toList()
       ..sort((a, b) => store.scores.technical(b).compareTo(store.scores.technical(a)));
     final top = featured.take(4).toList();
-    final votes = store.phones.fold<int>(0, (s, p) => s + p.seedRatings.count);
 
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('TeknoKıyas · hızlı · ölçülebilir · tarafsız', style: TextStyle(color: Ck.mute, fontSize: 13)),
-                const SizedBox(height: 6),
-                const Text(
-                  'Hangi telefon\ngerçekten önde?',
-                  style: TextStyle(fontSize: 34, height: 1.0, fontWeight: FontWeight.w700, letterSpacing: -1.2),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Teknik puan, gruplu özellik tablosu ve satır kazananı. Kullanıcı oyu küresel skora eklenir.',
-                  style: TextStyle(color: Ck.mute, height: 1.4),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    _Stat('${store.phones.length}', 'Model'),
-                    const SizedBox(width: 8),
-                    _Stat(formatCount(votes), 'Küresel oy'),
-                    const SizedBox(width: 8),
-                    const _Stat('4', 'Kıyas'),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
         const SliverToBoxAdapter(child: SectionTitle('Teknik skoru en yüksekler')),
         SliverToBoxAdapter(
           child: SizedBox(
@@ -129,33 +96,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat(this.value, this.label);
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Ck.panel,
-          border: Border.all(color: Ck.line),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.6)),
-            Text(label, style: const TextStyle(color: Ck.mute, fontSize: 12)),
-          ],
-        ),
-      ),
     );
   }
 }

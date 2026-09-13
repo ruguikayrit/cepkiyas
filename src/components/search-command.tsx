@@ -53,7 +53,7 @@ export function SearchCommand({
   }, [q]);
 
   const goCatalog = () => {
-    const href = q ? `/telefonlar?q=${encodeURIComponent(query.trim())}` : "/telefonlar";
+    const href = q ? `/katalog/telefon?q=${encodeURIComponent(query.trim())}` : "/katalog/telefon";
     router.push(href);
     onClose();
   };
@@ -80,7 +80,11 @@ export function SearchCommand({
         {brandHits.length ? (
           <div className="search-brands">
             {brandHits.map((brand) => (
-              <Link key={brand} href={`/telefonlar?marka=${encodeURIComponent(brand)}`} onClick={onClose}>
+              <Link
+                key={brand}
+                href={`/katalog/telefon?gorunum=markalar&marka=${encodeURIComponent(brand)}`}
+                onClick={onClose}
+              >
                 {brand}
               </Link>
             ))}

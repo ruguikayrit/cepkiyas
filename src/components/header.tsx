@@ -7,7 +7,7 @@ import { SearchCommand } from "@/components/search-command";
 import { useCompare } from "@/context/compare-context";
 
 const links = [
-  { href: "/telefonlar", label: "Katalog" },
+  { href: "/katalog", label: "Katalog" },
   { href: "/karsilastir", label: "Kıyasla" },
 ];
 

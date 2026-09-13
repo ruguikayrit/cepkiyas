@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../logic/catalog_grouping.dart';
 import '../logic/filters.dart';
 import '../logic/format.dart';
 import '../state/app_store.dart';
@@ -16,8 +17,17 @@ class CatalogScreen extends StatefulWidget {
 
 class _CatalogScreenState extends State<CatalogScreen> {
   late final TextEditingController _search;
+  var _view = _CatalogView.products;
+  String? _brandFocus;
 
   AppStore get store => widget.store;
+
+  static const _categories = [
+    ('Telefon', true),
+    ('Tablet', false),
+    ('Bilgisayar', false),
+    ('Akıllı saat', false),
+  ];
 
   @override
   void initState() {
@@ -35,8 +45,45 @@ class _CatalogScreenState extends State<CatalogScreen> {
   Widget build(BuildContext context) {
     final list = store.filtered;
     final chips = store.filters.chips(store.priceMax);
+    final brandIndex = buildBrandIndex(store.phones);
     return Column(
       children: [
+        SizedBox(
+          height: 40,
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            scrollDirection: Axis.horizontal,
+            itemCount: _categories.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
+            itemBuilder: (_, i) {
+              final (label, active) = _categories[i];
+              if (!active) {
+                return Chip(
+                  label: Text('$label · yakında'),
+                  side: const BorderSide(color: Ck.line),
+                  backgroundColor: Ck.panel,
+                );
+              }
+              return FilterChip(
+                label: Text('$label · ${store.phones.length}'),
+                selected: true,
+                onSelected: (_) {},
+                showCheckmark: false,
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: SegmentedButton<_CatalogView>(
+            segments: const [
+              ButtonSegment(value: _CatalogView.products, label: Text('Ürünler')),
+              ButtonSegment(value: _CatalogView.brands, label: Text('Markalar')),
+            ],
+            selected: {_view},
+            onSelectionChanged: (value) => setState(() => _view = value.first),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: Row(
@@ -113,28 +160,35 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
           ),
         Expanded(
-          child: list.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('Bu kriterlere uyan ürün yok.', style: TextStyle(color: Ck.mute)),
-                      if (store.filters.isActive(store.priceMax))
-                        TextButton(onPressed: _clear, child: const Text('Filtreleri temizle')),
-                    ],
-                  ),
+          child: _view == _CatalogView.brands
+              ? _BrandDirectory(
+                  index: brandIndex,
+                  focus: _brandFocus,
+                  onFocus: (brand) => setState(() => _brandFocus = brand),
+                  store: store,
                 )
-              : GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 0.72,
-                  ),
-                  itemCount: list.length,
-                  itemBuilder: (_, i) => PhoneTile(store: store, phone: list[i], compact: true),
-                ),
+              : list.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('Bu kriterlere uyan ürün yok.', style: TextStyle(color: Ck.mute)),
+                          if (store.filters.isActive(store.priceMax))
+                            TextButton(onPressed: _clear, child: const Text('Filtreleri temizle')),
+                        ],
+                      ),
+                    )
+                  : GridView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 0.72,
+                      ),
+                      itemCount: list.length,
+                      itemBuilder: (_, i) => PhoneTile(store: store, phone: list[i], compact: true),
+                    ),
         ),
       ],
     );
@@ -313,6 +367,76 @@ class _CatalogScreenState extends State<CatalogScreen> {
               ),
             );
           },
+        );
+      },
+    );
+  }
+}
+
+enum _CatalogView { products, brands }
+
+class _BrandDirectory extends StatelessWidget {
+  const _BrandDirectory({
+    required this.index,
+    required this.focus,
+    required this.onFocus,
+    required this.store,
+  });
+
+  final List<BrandGroup> index;
+  final String? focus;
+  final ValueChanged<String?> onFocus;
+  final AppStore store;
+
+  @override
+  Widget build(BuildContext context) {
+    if (focus != null) {
+      BrandGroup? group;
+      for (final item in index) {
+        if (item.brand == focus) {
+          group = item;
+          break;
+        }
+      }
+      if (group == null) {
+        return Center(child: TextButton(onPressed: () => onFocus(null), child: const Text('Markalar')));
+      }
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(onPressed: () => onFocus(null), child: const Text('← Tüm markalar')),
+          ),
+          Text(group.brand, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+          Text('${group.count} model', style: const TextStyle(color: Ck.mute)),
+          const SizedBox(height: 12),
+          for (final series in group.series) ...[
+            Text(series.series, style: const TextStyle(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 6),
+            for (final phone in series.models)
+              ListTile(
+                dense: true,
+                title: Text(phone.name),
+                subtitle: Text('${phone.year} · ${formatPrice(phone.priceTRY)}'),
+                onTap: () => Navigator.of(context).pushNamed('/telefon', arguments: phone.id),
+              ),
+            const SizedBox(height: 12),
+          ],
+        ],
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+      itemCount: index.length,
+      itemBuilder: (_, i) {
+        final group = index[i];
+        return ListTile(
+          title: Text(group.brand),
+          subtitle: Text('${group.count} model · ${group.series.length} seri'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => onFocus(group.brand),
         );
       },
     );
