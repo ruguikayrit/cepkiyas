@@ -32,18 +32,24 @@
   <title>TeknoKıyas</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    html, body { background: #08090b; margin: 0; height: 100%; }
+    html, body, flutter-view, flt-glass-pane {
+      background: #08090b !important;
+      margin: 0;
+      height: 100%;
+    }
   </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        for (const reg of regs) reg.unregister();
+      });
+      if (window.caches) {
+        caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
+      }
+    }
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

@@ -64,11 +64,11 @@ class _ShellState extends State<Shell> {
     super.initState();
     store.addListener(_onStore);
     _tabs = [
-      HomeScreen(key: const ValueKey('tab-home'), store: store),
-      CatalogScreen(key: const ValueKey('tab-products'), store: store),
-      CompareScreen(key: const ValueKey('tab-compare'), store: store),
-      FavoritesScreen(key: const ValueKey('tab-favorites'), store: store),
-      AccountScreen(key: const ValueKey('tab-account'), store: store),
+      HomeScreen(store: store),
+      CatalogScreen(store: store),
+      CompareScreen(store: store),
+      FavoritesScreen(store: store),
+      AccountScreen(store: store),
     ];
   }
 
@@ -107,10 +107,9 @@ class _ShellState extends State<Shell> {
           ),
         ],
       ),
-      body: IndexedStack(
-        index: tab,
-        sizing: StackFit.expand,
-        children: _tabs,
+      body: ColoredBox(
+        color: Ck.bg,
+        child: _tabs[tab],
       ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,

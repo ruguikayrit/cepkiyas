@@ -7,6 +7,21 @@ import 'state/app_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  ErrorWidget.builder = (details) {
+    return ColoredBox(
+      color: const Color(0xFF08090B),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            details.exceptionAsString(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Color(0xFFF4F6F8), fontSize: 13),
+          ),
+        ),
+      ),
+    );
+  };
   Intl.defaultLocale = 'tr_TR';
   await initializeDateFormatting('tr_TR');
   final store = AppStore();
