@@ -20,7 +20,7 @@ export default function Home() {
     <div className="shell">
       <section className="hero">
         <div>
-          <small className="mute">Hızlı · ölçülebilir · tarafsız</small>
+          <small className="mute">TeknoKıyas · hızlı · ölçülebilir · tarafsız</small>
           <h1>Hangi telefon gerçekten önde?</h1>
           <p>
             Teknik puan, gruplu özellik tablosu ve satır kazananı. Arama anında,

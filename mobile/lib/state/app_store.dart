@@ -114,6 +114,17 @@ class AppStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void resetFilters() {
+    filters = CatalogFilters(maxPrice: priceMax);
+    notifyListeners();
+  }
+
+  List<String> matchingBrands(String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return [];
+    return brands.where((brand) => brand.toLowerCase().contains(q)).take(6).toList();
+  }
+
   void goTab(int index) {
     tab = index;
     notifyListeners();
@@ -131,8 +142,16 @@ class AppStore extends ChangeNotifier {
     final q = query.trim().toLowerCase();
     if (q.isEmpty) return phones.take(8).toList();
     return phones
-        .where((p) => '${p.fullName} ${p.performance.chipset} ${p.os}'.toLowerCase().contains(q))
+        .where((p) => '${p.fullName} ${p.brand} ${p.performance.chipset} ${p.os}'.toLowerCase().contains(q))
         .take(12)
         .toList();
+  }
+
+  int searchCount(String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return phones.length;
+    return phones
+        .where((p) => '${p.fullName} ${p.brand} ${p.performance.chipset} ${p.os}'.toLowerCase().contains(q))
+        .length;
   }
 }

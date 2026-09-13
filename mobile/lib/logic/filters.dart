@@ -32,6 +32,60 @@ class CatalogFilters {
   bool foldable;
   SortKey sort;
 
+  bool isActive(int priceMax) =>
+      query.trim().isNotEmpty ||
+      brands.isNotEmpty ||
+      years.isNotEmpty ||
+      os.isNotEmpty ||
+      minPrice > 0 ||
+      maxPrice < priceMax ||
+      minRam > 0 ||
+      minStorage > 0 ||
+      only5g ||
+      foldable;
+
+  List<({String id, String label})> chips(int priceMax) {
+    final items = <({String id, String label})>[];
+    if (query.trim().isNotEmpty) items.add((id: 'q', label: '"${query.trim()}"'));
+    for (final brand in brands) {
+      items.add((id: 'brand-$brand', label: brand));
+    }
+    for (final year in years) {
+      items.add((id: 'year-$year', label: '$year'));
+    }
+    for (final item in os) {
+      items.add((id: 'os-$item', label: item));
+    }
+    if (minPrice > 0 || maxPrice < priceMax) {
+      items.add((id: 'price', label: '$minPrice – $maxPrice ₺'));
+    }
+    if (minRam > 0) items.add((id: 'ram', label: '$minRam GB+ RAM'));
+    if (minStorage > 0) items.add((id: 'storage', label: '$minStorage GB+'));
+    if (only5g) items.add((id: '5g', label: '5G'));
+    if (foldable) items.add((id: 'fold', label: 'Katlanır'));
+    return items;
+  }
+
+  CatalogFilters withoutChip(String id, int priceMax) {
+    final next = copy();
+    if (id == 'q') next.query = '';
+    if (id.startsWith('brand-')) next.brands.remove(id.substring(6));
+    if (id.startsWith('year-')) {
+      final year = int.tryParse(id.substring(5));
+      if (year != null) next.years.remove(year);
+    }
+    if (id.startsWith('os-')) next.os.remove(id.substring(3));
+    if (id == 'price') {
+      next.minPrice = 0;
+      next.maxPrice = priceMax;
+    }
+    if (id == 'ram') next.minRam = 0;
+    if (id == 'storage') next.minStorage = 0;
+    if (id == '5g') next.only5g = false;
+    if (id == 'fold') next.foldable = false;
+    return next;
+  }
+
   CatalogFilters copy() => CatalogFilters(
         query: query,
         brands: [...brands],

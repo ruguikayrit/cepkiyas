@@ -17,7 +17,7 @@ class CepKiyasApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CepKıyas',
+      title: 'TeknoKıyas',
       debugShowCheckedModeBanner: false,
       theme: Ck.theme(),
       locale: const Locale('tr', 'TR'),
@@ -67,8 +67,8 @@ class Shell extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('CepKıyas'),
-                Text('Teknik puan + kullanıcı oyu', style: TextStyle(color: Ck.mute, fontSize: 11, fontWeight: FontWeight.w400)),
+                Text('TeknoKıyas'),
+                Text('Teknoloji kıyası', style: TextStyle(color: Ck.mute, fontSize: 11, fontWeight: FontWeight.w400)),
               ],
             ),
           ],
@@ -120,7 +120,7 @@ class _Logo extends StatelessWidget {
       height: 32,
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Ck.mint, borderRadius: BorderRadius.circular(8)),
-      child: const Text('CK', style: TextStyle(color: Color(0xFF08110C), fontWeight: FontWeight.w800, fontSize: 11)),
+      child: const Text('TK', style: TextStyle(color: Color(0xFF08110C), fontWeight: FontWeight.w800, fontSize: 11)),
     );
   }
 }

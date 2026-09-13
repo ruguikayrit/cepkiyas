@@ -1,6 +1,17 @@
 import type { Phone, SortKey } from "@/types/phone";
 import { smartScore, technicalScore } from "@/lib/score";
 
+export const sortOptions: { id: SortKey; label: string }[] = [
+  { id: "smart", label: "Önerilen" },
+  { id: "popular", label: "Çok incelenen" },
+  { id: "newest", label: "En yeni" },
+  { id: "price-asc", label: "En düşük fiyat" },
+  { id: "price-desc", label: "En yüksek fiyat" },
+  { id: "technical", label: "Teknik puan" },
+  { id: "user", label: "Kullanıcı puanı" },
+  { id: "name", label: "Ada göre" },
+];
+
 export interface CatalogFilters {
   query: string;
   brands: string[];
@@ -13,6 +24,78 @@ export interface CatalogFilters {
   only5g: boolean;
   foldable: boolean;
   sort: SortKey;
+}
+
+export function isFilterActive(filters: CatalogFilters, priceMax: number) {
+  return Boolean(
+    filters.query.trim() ||
+      filters.brands.length ||
+      filters.years.length ||
+      filters.os.length ||
+      filters.minPrice > 0 ||
+      filters.maxPrice < priceMax ||
+      filters.minRam ||
+      filters.minStorage ||
+      filters.only5g ||
+      filters.foldable,
+  );
+}
+
+export function filterChips(filters: CatalogFilters, priceMax: number) {
+  const chips: { id: string; label: string; next: CatalogFilters }[] = [];
+  if (filters.query.trim()) {
+    chips.push({ id: "q", label: `"${filters.query.trim()}"`, next: { ...filters, query: "" } });
+  }
+  for (const brand of filters.brands) {
+    chips.push({
+      id: `brand-${brand}`,
+      label: brand,
+      next: { ...filters, brands: filters.brands.filter((item) => item !== brand) },
+    });
+  }
+  for (const year of filters.years) {
+    chips.push({
+      id: `year-${year}`,
+      label: String(year),
+      next: { ...filters, years: filters.years.filter((item) => item !== year) },
+    });
+  }
+  for (const os of filters.os) {
+    chips.push({
+      id: `os-${os}`,
+      label: os,
+      next: { ...filters, os: filters.os.filter((item) => item !== os) },
+    });
+  }
+  if (filters.minPrice > 0 || filters.maxPrice < priceMax) {
+    chips.push({
+      id: "price",
+      label: `${filters.minPrice.toLocaleString("tr-TR")} – ${filters.maxPrice.toLocaleString("tr-TR")} ₺`,
+      next: { ...filters, minPrice: 0, maxPrice: priceMax },
+    });
+  }
+  if (filters.minRam) {
+    chips.push({ id: "ram", label: `${filters.minRam} GB+ RAM`, next: { ...filters, minRam: 0 } });
+  }
+  if (filters.minStorage) {
+    chips.push({
+      id: "storage",
+      label: `${filters.minStorage} GB+ depolama`,
+      next: { ...filters, minStorage: 0 },
+    });
+  }
+  if (filters.only5g) chips.push({ id: "5g", label: "5G", next: { ...filters, only5g: false } });
+  if (filters.foldable) chips.push({ id: "fold", label: "Katlanır", next: { ...filters, foldable: false } });
+  return chips;
+}
+
+export function countBy<T extends string | number>(list: Phone[], key: (phone: Phone) => T) {
+  const counts = new Map<T, number>();
+  for (const phone of list) {
+    const value = key(phone);
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  return counts;
 }
 
 export function defaultFilters(priceMax: number): CatalogFilters {

@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Hızlı · ölçülebilir · tarafsız', style: TextStyle(color: Ck.mute, fontSize: 13)),
+                const Text('TeknoKıyas · hızlı · ölçülebilir · tarafsız', style: TextStyle(color: Ck.mute, fontSize: 13)),
                 const SizedBox(height: 6),
                 const Text(
                   'Hangi telefon\ngerçekten önde?',

@@ -168,6 +168,47 @@ class PhoneTile extends StatelessWidget {
     final technical = store.scores.technical(phone);
     final user = store.scoreOf(phone);
     final index = store.scores.index(technical, user.average);
+    if (compact) {
+      return Material(
+        color: Ck.panel,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => Navigator.of(context).pushNamed('/telefon', arguments: phone.id),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: Center(child: PhoneVisual(phone: phone, height: 92))),
+                const SizedBox(height: 8),
+                Text(phone.brand, style: const TextStyle(color: Ck.mute, fontSize: 11)),
+                Text(
+                  phone.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.w600, letterSpacing: -0.3),
+                ),
+                const SizedBox(height: 4),
+                Text(formatPrice(phone.priceTRY), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                const Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text('Endeks ${index.toStringAsFixed(1)}', style: const TextStyle(color: Ck.mute, fontSize: 11)),
+                    ),
+                    CompareChip(
+                      selected: store.isCompared(phone.id),
+                      onTap: () => store.toggleCompare(phone.id),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Material(
       color: Ck.panel,
       borderRadius: BorderRadius.circular(16),
@@ -178,7 +219,7 @@ class PhoneTile extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              PhoneVisual(phone: phone, height: compact ? 64 : 84),
+              PhoneVisual(phone: phone, height: 84),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -205,10 +246,8 @@ class PhoneTile extends StatelessWidget {
                         ScorePill(value: technical, label: 'Teknik'),
                         const SizedBox(width: 6),
                         ScorePill(value: user.average * 10, label: 'Kullanıcı'),
-                        if (!compact) ...[
-                          const SizedBox(width: 6),
-                          ScorePill(value: index, label: 'Endeks'),
-                        ],
+                        const SizedBox(width: 6),
+                        ScorePill(value: index, label: 'Endeks'),
                       ],
                     ),
                   ],

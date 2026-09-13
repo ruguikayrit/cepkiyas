@@ -17,11 +17,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "CepKıyas — Telefon karşılaştırma",
-    template: "%s · CepKıyas",
+    default: "TeknoKıyas — Teknoloji ürünlerini kıyasla",
+    template: "%s · TeknoKıyas",
   },
   description:
-    "Cep telefonlarını tüm teknik özellikleriyle kıyaslayın, puan verin ve küresel kullanıcı skorlarını görün.",
+    "Teknoloji ürünlerini teknik özellikleriyle kıyaslayın, puan verin ve küresel kullanıcı skorlarını görün.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -55,6 +55,39 @@ export function PhoneRow({ phone }: { phone: Phone }) {
   );
 }
 
+export function ShopCard({ phone }: { phone: Phone }) {
+  const { toggle, has } = useCompare();
+  const { scoreOf } = useRatings();
+  const technical = technicalScore(phone);
+  const user = scoreOf(phone);
+  const index = globalIndex(technical, user.average);
+  const selected = has(phone.id);
+
+  return (
+    <article className={`shop-card ${selected ? "selected" : ""}`}>
+      <Link href={`/telefon/${phone.slug}`} className="shop-card-main">
+        <div className="shop-card-media">
+          <PhoneVisual phone={phone} size="lg" />
+        </div>
+        <small>{phone.brand}</small>
+        <h3>{phone.name}</h3>
+        <strong className="shop-card-price">{formatPrice(phone.priceTRY)}</strong>
+        <p>
+          {phone.year}
+          {phone.memory.ram ? ` · ${phone.memory.ram} GB RAM` : ""}
+          {phone.memory.storage ? ` · ${phone.memory.storage} GB` : ""}
+        </p>
+      </Link>
+      <div className="shop-card-foot">
+        <span>Endeks {index.toFixed(1)}</span>
+        <button type="button" className={selected ? "chip active" : "chip"} onClick={() => toggle(phone.id)}>
+          {selected ? "Seçildi" : "Kıyasla"}
+        </button>
+      </div>
+    </article>
+  );
+}
+
 export function PhoneCard({ phone }: { phone: Phone }) {
   const { toggle, has } = useCompare();
   const { scoreOf } = useRatings();

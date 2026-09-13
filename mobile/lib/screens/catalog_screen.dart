@@ -34,6 +34,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   @override
   Widget build(BuildContext context) {
     final list = store.filtered;
+    final chips = store.filters.chips(store.priceMax);
     return Column(
       children: [
         Padding(
@@ -46,17 +47,17 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   onChanged: (value) => store.setFilters(store.filters.copy()..query = value),
                   style: const TextStyle(color: Ck.ink),
                   decoration: InputDecoration(
-                    hintText: 'Model, yonga, sistem…',
+                    hintText: 'Ürün, marka veya model ara',
                     hintStyle: const TextStyle(color: Ck.mute),
                     filled: true,
                     fillColor: Ck.panel,
                     prefixIcon: const Icon(Icons.search, color: Ck.mute),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
                       borderSide: const BorderSide(color: Ck.line),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
                       borderSide: const BorderSide(color: Ck.line),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -64,30 +65,84 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              IconButton.filledTonal(
-                onPressed: () => _openFilters(context),
-                icon: const Icon(Icons.tune_rounded),
+              Badge(
+                isLabelVisible: store.filters.isActive(store.priceMax),
+                label: Text('${chips.length}'),
+                child: IconButton.filledTonal(
+                  onPressed: () => _openFilters(context),
+                  icon: const Icon(Icons.tune_rounded),
+                ),
               ),
             ],
           ),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text('${list.length} model · ${sortLabels[store.filters.sort]}', style: const TextStyle(color: Ck.mute)),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${list.length} ürün · ${sortLabels[store.filters.sort]}',
+                  style: const TextStyle(color: Ck.mute),
+                ),
+              ),
+              if (store.filters.isActive(store.priceMax))
+                TextButton(onPressed: _clear, child: const Text('Temizle')),
+            ],
           ),
         ),
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-            itemCount: list.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 8),
-            itemBuilder: (_, i) => PhoneTile(store: store, phone: list[i]),
+        if (chips.isNotEmpty)
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              scrollDirection: Axis.horizontal,
+              itemCount: chips.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (_, i) {
+                final chip = chips[i];
+                return InputChip(
+                  label: Text(chip.label),
+                  onDeleted: () {
+                    final next = store.filters.withoutChip(chip.id, store.priceMax);
+                    store.setFilters(next);
+                    if (chip.id == 'q') _search.clear();
+                  },
+                );
+              },
+            ),
           ),
+        Expanded(
+          child: list.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Bu kriterlere uyan ürün yok.', style: TextStyle(color: Ck.mute)),
+                      if (store.filters.isActive(store.priceMax))
+                        TextButton(onPressed: _clear, child: const Text('Filtreleri temizle')),
+                    ],
+                  ),
+                )
+              : GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 0.72,
+                  ),
+                  itemCount: list.length,
+                  itemBuilder: (_, i) => PhoneTile(store: store, phone: list[i], compact: true),
+                ),
         ),
       ],
     );
+  }
+
+  void _clear() {
+    _search.clear();
+    store.resetFilters();
   }
 
   Future<void> _openFilters(BuildContext context) async {
@@ -105,7 +160,29 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Filtreler', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text('Filtreler', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            draft.query = '';
+                            draft.brands.clear();
+                            draft.years.clear();
+                            draft.os.clear();
+                            draft.minPrice = 0;
+                            draft.maxPrice = store.priceMax;
+                            draft.minRam = 0;
+                            draft.minStorage = 0;
+                            draft.only5g = false;
+                            draft.foldable = false;
+                            setModal(() {});
+                          },
+                          child: const Text('Temizle'),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<SortKey>(
                       initialValue: draft.sort,
@@ -177,11 +254,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           ),
                       ],
                     ),
-                    Text('Fiyat · ${formatPrice(draft.maxPrice)}'),
-                    Slider(
-                      value: draft.maxPrice.toDouble(),
+                    Text('Fiyat · ${formatPrice(draft.minPrice)} – ${formatPrice(draft.maxPrice)}'),
+                    RangeSlider(
+                      values: RangeValues(draft.minPrice.toDouble(), draft.maxPrice.toDouble()),
                       max: store.priceMax.toDouble(),
-                      onChanged: (v) => setModal(() => draft.maxPrice = v.round()),
+                      onChanged: (v) => setModal(() {
+                        draft.minPrice = v.start.round();
+                        draft.maxPrice = v.end.round();
+                      }),
                     ),
                     DropdownButtonFormField<int>(
                       initialValue: draft.minRam,
@@ -194,6 +274,18 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         DropdownMenuItem(value: 16, child: Text('16 GB+')),
                       ],
                       onChanged: (v) => setModal(() => draft.minRam = v ?? 0),
+                    ),
+                    DropdownButtonFormField<int>(
+                      initialValue: draft.minStorage,
+                      dropdownColor: Ck.panel,
+                      decoration: const InputDecoration(labelText: 'Min. depolama'),
+                      items: const [
+                        DropdownMenuItem(value: 0, child: Text('Tümü')),
+                        DropdownMenuItem(value: 128, child: Text('128 GB+')),
+                        DropdownMenuItem(value: 256, child: Text('256 GB+')),
+                        DropdownMenuItem(value: 512, child: Text('512 GB+')),
+                      ],
+                      onChanged: (v) => setModal(() => draft.minStorage = v ?? 0),
                     ),
                     SwitchListTile(
                       title: const Text('Yalnızca 5G'),
@@ -210,9 +302,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       child: FilledButton(
                         onPressed: () {
                           store.setFilters(draft);
+                          _search.text = draft.query;
                           Navigator.pop(context);
                         },
-                        child: const Text('Uygula'),
+                        child: const Text('Ürünleri göster'),
                       ),
                     ),
                   ],

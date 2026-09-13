@@ -39,12 +39,20 @@ export function Header() {
       <header className="site-header">
         <div className="shell header-inner">
           <Link href="/" className="logo">
-            <span className="logo-mark">CK</span>
+            <span className="logo-mark">TK</span>
             <span>
-              CepKıyas
-              <small>Teknik puan + kullanıcı oyu</small>
+              TeknoKıyas
+              <small>Teknoloji kıyası</small>
             </span>
           </Link>
+
+          <button type="button" className="search-trigger" onClick={openSearch}>
+            <span className="search-trigger-icon" aria-hidden>
+              ⌕
+            </span>
+            <span>Ürün, marka veya model ara</span>
+            <kbd>⌘K</kbd>
+          </button>
 
           <nav className="header-nav">
             {links.map((link) => (
@@ -60,11 +68,6 @@ export function Header() {
               </Link>
             ))}
           </nav>
-
-          <button type="button" className="search-trigger" onClick={openSearch}>
-            <span>Model veya yonga ara</span>
-            <kbd>⌘K</kbd>
-          </button>
         </div>
       </header>
       <SearchCommand key={searchKey} open={open} onClose={() => setOpen(false)} />
