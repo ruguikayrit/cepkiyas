@@ -19,7 +19,8 @@ class CatalogScreen extends StatefulWidget {
 class _CatalogScreenState extends State<CatalogScreen> {
   late final TextEditingController _search;
   var _view = _ProductsBrowseMode.grouped;
-  String? _categoryFilter;
+  /// Varsayılan Telefon: tüm grupları aynı anda açmak web'de ağırlaştırır.
+  String? _categoryFilter = 'telefon';
 
   AppStore get store => widget.store;
 
