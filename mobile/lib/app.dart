@@ -11,6 +11,7 @@ import 'screens/home_screen.dart';
 import 'screens/search_screen.dart';
 import 'state/app_store.dart';
 import 'theme.dart';
+import 'widgets/brand_lockup.dart';
 import 'widgets/widgets.dart';
 
 class CepKiyasApp extends StatelessWidget {
@@ -87,19 +88,8 @@ class _ShellState extends State<Shell> {
     return Scaffold(
       backgroundColor: Ck.bg,
       appBar: AppBar(
-        title: const Row(
-          children: [
-            _Logo(),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('TeknoKıyas'),
-                Text('Teknoloji kıyası', style: TextStyle(color: Ck.mute, fontSize: 11, fontWeight: FontWeight.w400)),
-              ],
-            ),
-          ],
-        ),
+        title: const BrandLockup(height: 36),
+        titleSpacing: 12,
         actions: [
           IconButton(
             onPressed: () => Navigator.of(context).pushNamed('/ara'),
@@ -116,7 +106,7 @@ class _ShellState extends State<Shell> {
         children: [
           if (store.compareIds.isNotEmpty && tab != AppTab.compare) _CompareBar(store: store),
           NavigationBar(
-            backgroundColor: Ck.bg2,
+            backgroundColor: Ck.bg,
             indicatorColor: Ck.mintDim,
             labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
             selectedIndex: tab,
@@ -159,21 +149,6 @@ class _ShellState extends State<Shell> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _Logo extends StatelessWidget {
-  const _Logo();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 32,
-      height: 32,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(color: Ck.mint, borderRadius: BorderRadius.circular(8)),
-      child: const Text('TK', style: TextStyle(color: Color(0xFF08110C), fontWeight: FontWeight.w800, fontSize: 11)),
     );
   }
 }

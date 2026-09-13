@@ -248,7 +248,7 @@ class _RatingCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: view[category.$1] >= i ? const Color(0xFF08110C) : Ck.ink,
+                                color: view[category.$1] >= i ? Colors.white : Ck.ink,
                               ),
                             ),
                           ),

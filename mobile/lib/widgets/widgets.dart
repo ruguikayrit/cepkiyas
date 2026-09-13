@@ -18,9 +18,9 @@ class PhoneVisual extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: const Color(0xFF0B0C0F),
+        color: Ck.panel2,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white12),
+        border: Border.all(color: Ck.line),
       ),
       clipBehavior: Clip.antiAlias,
       child: phone.image.isEmpty
@@ -28,7 +28,7 @@ class PhoneVisual extends StatelessWidget {
               child: Text(
                 phone.brand,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white54, fontSize: 10),
+                style: const TextStyle(color: Ck.mute, fontSize: 10),
               ),
             )
           : phone.image.startsWith('http')
@@ -36,7 +36,7 @@ class PhoneVisual extends StatelessWidget {
                   phone.image,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stack) => Center(
-                    child: Text(phone.brand, style: const TextStyle(color: Colors.white54, fontSize: 10)),
+                    child: Text(phone.brand, style: const TextStyle(color: Ck.mute, fontSize: 10)),
                   ),
                 )
               : Image.asset(
@@ -45,7 +45,7 @@ class PhoneVisual extends StatelessWidget {
                   errorBuilder: (context, error, stack) => Center(
                     child: Text(
                       phone.brand,
-                      style: const TextStyle(color: Colors.white54, fontSize: 10),
+                      style: const TextStyle(color: Ck.mute, fontSize: 10),
                     ),
                   ),
                 ),

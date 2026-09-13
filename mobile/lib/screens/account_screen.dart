@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../state/app_store.dart';
 import '../theme.dart';
+import '../widgets/brand_lockup.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key, required this.store});
@@ -20,27 +21,7 @@ class AccountScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Ck.line),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(color: Ck.mint, borderRadius: BorderRadius.circular(14)),
-                child: const Text('TK', style: TextStyle(color: Color(0xFF08110C), fontWeight: FontWeight.w800)),
-              ),
-              const SizedBox(width: 14),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('TeknoKıyas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                    Text('Teknoloji kıyası', style: TextStyle(color: Ck.mute, fontSize: 13)),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          child: const BrandLockup(height: 44),
         ),
         const SizedBox(height: 16),
         _StatTile(label: 'Katalogdaki modeller', value: '${store.phones.length}'),

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Ck {
-  static const bg = Color(0xFF08090B);
-  static const bg2 = Color(0xFF0D0F13);
-  static const panel = Color(0xFF11141A);
-  static const panel2 = Color(0xFF171B22);
-  static const line = Color(0xFF242A33);
-  static const ink = Color(0xFFF4F6F8);
-  static const mute = Color(0xFF8B939E);
-  static const mint = Color(0xFF6EE7B7);
-  static const mintDim = Color(0xFF163528);
-  static const gold = Color(0xFFEFC15A);
-  static const danger = Color(0xFFF07178);
+  static const bg = Color(0xFFFFFFFF);
+  static const bg2 = Color(0xFFF5F7FB);
+  static const panel = Color(0xFFFFFFFF);
+  static const panel2 = Color(0xFFF3F5F8);
+  static const line = Color(0xFFE4E8F0);
+  static const ink = Color(0xFF0B1220);
+  static const mute = Color(0xFF6B7280);
+  static const mint = Color(0xFF1A5CFF);
+  static const mintDim = Color(0xFFE8EFFF);
+  static const gold = Color(0xFFD97706);
+  static const danger = Color(0xFFDC4C54);
 
   static Color tone(double score) {
     if (score >= 88) return mint;
@@ -20,34 +21,61 @@ class Ck {
   }
 
   static ThemeData theme() {
-    final base = ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
+    final text = GoogleFonts.plusJakartaSansTextTheme(
+      ThemeData(brightness: Brightness.light).textTheme.apply(
+            bodyColor: ink,
+            displayColor: ink,
+          ),
     );
-    return base.copyWith(
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: bg,
-      colorScheme: const ColorScheme.dark(
+      canvasColor: bg,
+      textTheme: text,
+      primaryTextTheme: text,
+      colorScheme: const ColorScheme.light(
         surface: panel,
         primary: mint,
-        onPrimary: Color(0xFF08110C),
+        onPrimary: Colors.white,
         onSurface: ink,
         outline: line,
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: bg,
         foregroundColor: ink,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
+        titleSpacing: 12,
+        toolbarHeight: 64,
+        titleTextStyle: GoogleFonts.plusJakartaSans(
           fontSize: 20,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.4,
-          color: ink,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.6,
+          color: mint,
         ),
+      ),
+      chipTheme: const ChipThemeData(
+        backgroundColor: panel2,
+        selectedColor: mintDim,
+        side: BorderSide(color: line),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: bg,
+        indicatorColor: mintDim,
+        elevation: 0,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          return GoogleFonts.plusJakartaSans(
+            fontSize: 11,
+            fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
+            color: states.contains(WidgetState.selected) ? mint : mute,
+          );
+        }),
       ),
       dividerColor: line,
       cardColor: panel,
-      snackBarTheme: const SnackBarThemeData(backgroundColor: panel2),
+      snackBarTheme: const SnackBarThemeData(backgroundColor: ink, contentTextStyle: TextStyle(color: Colors.white)),
     );
   }
 }

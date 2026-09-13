@@ -35,6 +35,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.3
   intl: any
+  google_fonts: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,7 @@ flutter:
     - assets/data/catalog.json
     - assets/data/specs-overlay.json
     - assets/phones/
+    - assets/brand/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
