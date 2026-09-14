@@ -74,10 +74,9 @@ class HomeScreen extends StatelessWidget {
             },
           ),
         ),
-        const SliverToBoxAdapter(child: SectionTitle('Markalar')),
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
