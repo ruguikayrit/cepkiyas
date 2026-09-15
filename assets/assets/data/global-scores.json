@@ -1,0 +1,422 @@
+{
+  "iphone-16-pro-max": {
+    "globalScore": 9.0,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "154 puan → 8.9/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "1.784.000 → 9.0/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "8.420 → 9.2/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "9.1/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "iphone-16-pro": {
+    "globalScore": 8.9,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "151 puan → 8.6/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "1.769.000 → 8.9/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "8.380 → 9.2/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.9/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "iphone-16": {
+    "globalScore": 8.2,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "141 puan → 7.9/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "1.482.000 → 8.2/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "7.210 → 8.5/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.4/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "galaxy-s25-ultra": {
+    "globalScore": 9.3,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "157 puan → 9.1/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "2.145.000 → 9.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "10.180 → 9.7/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "9/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "galaxy-s25": {
+    "globalScore": 8.9,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "142 puan → 8.0/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "2.068.000 → 9.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "9.920 → 9.7/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.5/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "galaxy-z-fold6": {
+    "globalScore": 8.3,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "138 puan → 7.7/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "1.762.000 → 8.9/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "6.980 → 8.4/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.3/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "galaxy-a56": {
+    "globalScore": 6.9,
+    "sources": [
+      {
+        "name": "AnTuTu",
+        "detail": "742.000 → 6.4/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "3.450 → 6.4/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "7.8/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "xiaomi-15-ultra": {
+    "globalScore": 9.4,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "163 puan → 9.5/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "2.188.000 → 9.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "10.340 → 9.7/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.9/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "xiaomi-15": {
+    "globalScore": 9.0,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "148 puan → 8.4/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "2.112.000 → 9.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "10.080 → 9.7/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.6/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "redmi-note-14-pro-plus": {
+    "globalScore": 7.8,
+    "sources": [
+      {
+        "name": "AnTuTu",
+        "detail": "1.328.000 → 7.8/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "5.120 → 7.3/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.1/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "pixel-9-pro-xl": {
+    "globalScore": 8.2,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "158 puan → 9.1/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "1.184.000 → 7.5/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "4.580 → 7.0/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.7/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "pixel-9": {
+    "globalScore": 7.9,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "147 puan → 8.4/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "1.148.000 → 7.4/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "4.490 → 7.0/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.3/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "oneplus-13": {
+    "globalScore": 9.1,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "150 puan → 8.6/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "2.164.000 → 9.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "10.260 → 9.7/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.8/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "nothing-phone-3": {
+    "globalScore": 8.2,
+    "sources": [
+      {
+        "name": "AnTuTu",
+        "detail": "1.546.000 → 8.4/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "6.420 → 8.1/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "honor-magic7-pro": {
+    "globalScore": 9.1,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "152 puan → 8.7/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "2.096.000 → 9.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "9.880 → 9.7/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.5/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "oppo-find-x8-pro": {
+    "globalScore": 9.1,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "156 puan → 9.0/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "1.988.000 → 9.5/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "8.640 → 9.3/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.6/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "vivo-x200-pro": {
+    "globalScore": 9.2,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "161 puan → 9.4/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "2.014.000 → 9.5/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "8.720 → 9.3/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.7/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "poco-f7-ultra": {
+    "globalScore": 9.2,
+    "sources": [
+      {
+        "name": "AnTuTu",
+        "detail": "2.132.000 → 9.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "10.020 → 9.7/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.2/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "huawei-pura-70-ultra": {
+    "globalScore": 7.8,
+    "sources": [
+      {
+        "name": "DXOMARK Camera",
+        "detail": "155 puan → 8.9/10"
+      },
+      {
+        "name": "AnTuTu",
+        "detail": "892.000 → 6.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "4.280 → 6.9/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.4/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  },
+  "realme-gt-7-pro": {
+    "globalScore": 9.1,
+    "sources": [
+      {
+        "name": "AnTuTu",
+        "detail": "2.151.000 → 9.7/10"
+      },
+      {
+        "name": "Geekbench Multi",
+        "detail": "10.140 → 9.7/10"
+      },
+      {
+        "name": "Editoryal konsensüs",
+        "detail": "8.1/10"
+      }
+    ],
+    "method": "global-composite-dxomark-antutu-geekbench-editorial"
+  }
+}
